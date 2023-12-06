@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+// ============================================================================
+//
+// Copyright (c) 2006-2021 Talend Inc. - www.talend.com
+//
+// This source code is available under agreement available at
+// %InstallDIR%\license.txt
+//
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 5/7 rue Salomon De Rothschild, 92150 Suresnes, France
+//
+// ============================================================================
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <artifactId>bom</artifactId>
+        <groupId>org.talend.esb</groupId>
+        <version>8.0.1-SNAPSHOT</version>
+        <relativePath>../bom</relativePath>
+    </parent>
+
+    <groupId>org.talend.esb.auxiliary.storage</groupId>
+    <artifactId>auxiliary-storage-parent</artifactId>
+        <version>8.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>Talend ESB :: Auxiliary Storage :: Parent</name>
+
+    <modules>
+		<module>common</module>
+		<module>features</module>
+
+		<module>persistence</module>
+		<module>persistence-file</module>
+        <module>persistence-jcr</module>
+
+        <module>security-rest</module>
+
+		<module>client</module>
+		<module>client-common</module>
+
+		<module>server</module>
+	    <module>service-rest</module>
+
+        <module>commands</module>
+
+        <module>examples</module>
+
+    </modules>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-eclipse-plugin</artifactId>
+                <configuration>
+                    <downloadSources>true</downloadSources>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <executions>
+                   <execution>
+                       <id>local-deploy</id>
+                       <phase>package</phase>
+                       <configuration>
+                           <altDeploymentRepository>local::default::file:${project.build.directory}/repo</altDeploymentRepository>
+                       </configuration>
+                       <goals>
+                           <goal>deploy</goal>
+                       </goals>
+                   </execution>
+                   <execution>
+                       <id>default-deploy</id>
+                       <phase>deploy</phase>
+                       <goals>
+                           <goal>deploy</goal>
+                       </goals>
+                   </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <includeScope>runtime</includeScope>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+        <pluginManagement>
+        	<plugins>
+        		<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+        		<plugin>
+        			<groupId>org.eclipse.m2e</groupId>
+        			<artifactId>lifecycle-mapping</artifactId>
+        			<configuration>
+        				<lifecycleMappingMetadata>
+        					<pluginExecutions>
+        						<pluginExecution>
+        							<pluginExecutionFilter>
+        								<groupId>
+        									org.apache.maven.plugins
+        								</groupId>
+        								<artifactId>
+        									maven-dependency-plugin
+        								</artifactId>
+        								<versionRange>
+        									[2.1,)
+        								</versionRange>
+        								<goals>
+        									<goal>
+        										copy-dependencies
+        									</goal>
+        								</goals>
+        							</pluginExecutionFilter>
+        							<action>
+        								<ignore></ignore>
+        							</action>
+        						</pluginExecution>
+        					</pluginExecutions>
+        				</lifecycleMappingMetadata>
+        			</configuration>
+        		</plugin>
+        	</plugins>
+        </pluginManagement>
+    </build>
+</project>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+ Copyright (c) 2006-2021 Talend Inc. - www.talend.com
+ All rights reserved.
+
+ This program and the accompanying materials are made available
+ under the terms of the Apache License v2.0
+ which accompanies this distribution, and is available at
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ -->
+
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:jaxws="http://cxf.apache.org/blueprint/jaxws" xmlns:cxf="http://cxf.apache.org/blueprint/core"
+    xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+    xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 		  
+   						http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+                       	http://cxf.apache.org/blueprint/jaxws 
+                       	http://cxf.apache.org/schemas/blueprint/jaxws.xsd
+                       	http://cxf.apache.org/blueprint/core 
+                       	http://cxf.apache.org/schemas/blueprint/core.xsd
+                       	http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
+                       	http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd">
+
+    <cm:property-placeholder persistent-id="org.talend.esb.monitoring.locator" update-strategy="reload">
+        <cm:default-properties>
+            <cm:property name="scanIntervall" value="60" />
+        </cm:default-properties>
+    </cm:property-placeholder>
+
+    <reference id="serviceLocator" interface="org.talend.esb.servicelocator.client.ServiceLocator" />
+
+    <bean id="locator-monitor" class="org.talend.esb.servicelocator.monitor.LocatorMonitor"
+            init-method="start" destroy-method="stop">
+        <property name="scanInterval" value="${scanIntervall}" />
+        <property name="serviceLocator" ref="serviceLocator" />
+    </bean>
+
+</blueprint>

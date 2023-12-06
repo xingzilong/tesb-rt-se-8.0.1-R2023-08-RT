@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.talend.esb</groupId>
+    <artifactId>ds-service-derby</artifactId>
+    <packaging>bundle</packaging>
+    <version>${revision}</version>
+
+    <parent>
+        <groupId>org.talend.esb</groupId>
+        <artifactId>datasource-service</artifactId>
+        <version>8.0.1-SNAPSHOT</version>
+    </parent>
+
+    <name>Talend ESB :: SAM :: Datasource :: Derby</name>
+
+    <properties>
+        <revision>${ds-service-derby.version}</revision>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <!--Import-Package>javax.sql,org.apache.commons.dbcp.datasources,org.apache.derby.jdbc;version="10.7.0",org.osgi.service.blueprint;version="[1.0.0,2.0.0)"</Import-Package-->
+                    </instructions>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-artifacts</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attach-artifact</goal>
+                        </goals>
+                        <configuration>
+                            <artifacts>
+                                <artifact>
+                                    <file>etc/org.talend.esb.datasource.derby.cfg</file>
+                                    <type>cfg</type>
+                                    <classifier>org.talend.esb.datasource.derby</classifier>
+                                </artifact>
+                            </artifacts>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

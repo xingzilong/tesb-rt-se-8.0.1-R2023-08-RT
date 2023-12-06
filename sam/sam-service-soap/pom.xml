@@ -1,0 +1,137 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.talend.esb.sam.service</groupId>
+    <artifactId>sam-service-soap</artifactId>
+    <packaging>bundle</packaging>
+    <version>${revision}</version>
+
+    <parent>
+        <groupId>org.talend.esb</groupId>
+        <artifactId>sam-parent</artifactId>
+        <version>8.0.1-SNAPSHOT</version>
+    </parent>
+
+    <name>Talend ESB :: SAM :: SOAP Service</name>
+    
+    <properties>
+        <revision>${sam-service-soap.version}</revision>
+    </properties>
+
+   <dependencies>
+
+        <dependency>
+            <groupId>org.talend.esb</groupId>
+            <artifactId>sam-server</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-frontend-jaxws</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-transports-http</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-transports-http-jetty</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-ws-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-ws-policy</artifactId>
+        </dependency>
+
+        <!--  Test  -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymock</artifactId>
+            <scope>test</scope>
+        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.apache.derby</groupId>-->
+<!--            <artifactId>derby</artifactId>-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
+       <dependency>
+           <groupId>org.apache.servicemix.bundles</groupId>
+           <artifactId>org.apache.servicemix.bundles.derby</artifactId>
+           <scope>test</scope>
+       </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Import-Package>
+                            *
+                            ,org.springframework.transaction.annotation
+                            ,org.springframework.jdbc.datasource
+                        </Import-Package>
+                        <_nouses>true</_nouses>
+                    </instructions>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-artifacts</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attach-artifact</goal>
+                        </goals>
+                        <configuration>
+                            <artifacts>
+                                <artifact>
+                                    <file>etc/org.talend.esb.sam.service.soap.cfg</file>
+                                    <type>cfg</type>
+                                    <classifier>org.talend.esb.sam.service.soap</classifier>
+                                </artifact>
+                                <artifact>
+                                    <file>etc/org.talend.esb.sam.service.soap.keystore.cfg</file>
+                                    <type>cfg</type>
+                                    <classifier>org.talend.esb.sam.service.soap.keystore</classifier>
+                                </artifact>
+                                <artifact>
+                                    <file>etc/org.talend.esb.sam.service.soap.ut.policy</file>
+                                    <type>policy</type>
+                                    <classifier>org.talend.esb.sam.service.soap.ut</classifier>
+                                </artifact>
+                                <artifact>
+                                    <file>etc/org.talend.esb.sam.service.soap.saml.policy</file>
+                                    <type>policy</type>
+                                    <classifier>org.talend.esb.sam.service.soap.saml</classifier>
+                                </artifact>
+                            </artifacts>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

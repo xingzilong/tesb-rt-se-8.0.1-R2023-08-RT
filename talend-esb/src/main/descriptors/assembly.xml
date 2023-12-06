@@ -1,0 +1,583 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  #%L
+  TESB :: Assembly
+  %%
+  Copyright (c) 2006-2021 Talend Inc. - www.talend.com
+  %%
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  #L%
+  -->
+
+<assembly>
+
+    <id>talend-esb</id>
+
+    <baseDirectory>TESB_SE-V${packages.version}</baseDirectory>
+
+    <fileSets>
+
+        <fileSet>
+            <directory>target/features-repo</directory>
+            <outputDirectory>./container/system</outputDirectory>
+            <excludes>
+                <!-- exclude JDBC drivers because of licensing limitation -->
+                <exclude>mysql/**</exclude>
+                <exclude>ojdbc/**</exclude>
+                <exclude>com/ibm/db2/**</exclude>
+                <exclude>com/microsoft/sqlserver/**</exclude>
+                <!-- <exclude>com/h2database/h2/**</exclude> -->
+            </excludes>
+        </fileSet>
+
+        <!-- Expanded CXF Runtime -->
+        <fileSet>
+            <directory>target/dependencies/cxf/apache-cxf-${cxf.version}</directory>
+            <outputDirectory>./</outputDirectory>
+            <excludes>
+                <exclude>LICENSE</exclude>
+                <exclude>NOTICE</exclude>
+                <exclude>README</exclude>
+                <exclude>bin/*</exclude>
+                <exclude>docs/**</exclude>
+                <exclude>etc/**</exclude>
+                <exclude>release_notes.txt</exclude>
+                <exclude>lib/commons-collections-3.2.1.jar</exclude>
+                <exclude>lib/jettison-1.5.3.jar</exclude>
+                <exclude>lib/endorsed/**</exclude>
+                <!--exclude>lib/jaxb-*.jar</exclude-->
+                <exclude>lib/saaj*.jar</exclude>
+                <exclude>lib/geronimo-activation**</exclude>
+                <exclude>lib/geronimo-annotation**</exclude>
+                <exclude>lib/geronimo-stax-api**</exclude>
+                <exclude>lib/geronimo-ws-metadata**</exclude>
+                <exclude>lib/geronimo-jaxws**</exclude>
+                <exclude>lib/guava*.jar</exclude>
+                <exclude>lib/bcprov-jdk*.jar</exclude>
+                <exclude>lib/activemq**</exclude>
+                <exclude>lib/spring*.jar</exclude>
+                <exclude>samples/**</exclude>
+            </excludes>
+            <directoryMode>755</directoryMode>
+            <fileMode>0644</fileMode>
+        </fileSet>
+        <fileSet>
+            <directory>target/dependencies/cxf/apache-cxf-${cxf.version}/docs/api</directory>
+            <outputDirectory>./docs/cxf-api</outputDirectory>
+            <directoryMode>755</directoryMode>
+            <fileMode>0644</fileMode>
+        </fileSet>
+
+        <fileSet>
+            <directory>target/dependencies/cxf/apache-cxf-${cxf.version}/bin</directory>
+            <outputDirectory>./bin</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+            <excludes>
+                <exclude>*.bat</exclude>
+            </excludes>
+            <lineEnding>unix</lineEnding>
+            <fileMode>0755</fileMode>
+            <directoryMode>755</directoryMode>
+        </fileSet>
+        <fileSet>
+            <directory>target/dependencies/cxf/apache-cxf-${cxf.version}/bin</directory>
+            <outputDirectory>./bin</outputDirectory>
+            <includes>
+                <include>*.bat</include>
+            </includes>
+            <lineEnding>dos</lineEnding>
+            <fileMode>0644</fileMode>
+            <directoryMode>755</directoryMode>
+        </fileSet>
+
+        <fileSet>
+            <directory>target/classes/bin</directory>
+            <outputDirectory>./bin</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+            <excludes>
+                <exclude>*.bat</exclude>
+                <exclude>*.cmd</exclude>
+            </excludes>
+            <lineEnding>unix</lineEnding>
+            <fileMode>0755</fileMode>
+            <directoryMode>755</directoryMode>
+        </fileSet>
+        <fileSet>
+            <directory>target/classes/bin</directory>
+            <outputDirectory>./bin</outputDirectory>
+            <includes>
+                <include>*.bat</include>
+                <include>*.cmd</include>
+            </includes>
+            <lineEnding>dos</lineEnding>
+            <fileMode>0644</fileMode>
+            <directoryMode>755</directoryMode>
+        </fileSet>
+        <fileSet>
+            <directory>target/classes/cbin</directory>
+            <outputDirectory>./container/bin</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+            <excludes>
+                <exclude>*.bat</exclude>
+                <exclude>*.cmd</exclude>
+            </excludes>
+            <lineEnding>unix</lineEnding>
+            <fileMode>0755</fileMode>
+            <directoryMode>755</directoryMode>
+        </fileSet>
+        <fileSet>
+            <directory>target/classes/cbin</directory>
+            <outputDirectory>./container/bin</outputDirectory>
+            <includes>
+                <include>*.bat</include>
+                <include>*.cmd</include>
+            </includes>
+            <lineEnding>dos</lineEnding>
+            <fileMode>0644</fileMode>
+            <directoryMode>755</directoryMode>
+        </fileSet>
+        <fileSet>
+            <directory>${basedir}/src/main/scripts</directory>
+            <outputDirectory>./container/scripts</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+            <lineEnding>unix</lineEnding>
+            <fileMode>0755</fileMode>
+            <directoryMode>755</directoryMode>
+        </fileSet>
+
+        <!-- Expanded ZooKeeper Runtime -->
+        <fileSet>
+            <directory>target/dependencies/zookeeper/apache-zookeeper-${zookeeper.version}-bin</directory>
+            <outputDirectory>./zookeeper</outputDirectory>
+            <excludes>
+                <exclude>LICENSE.txt</exclude>
+                <exclude>NOTICE.txt</exclude>
+                <exclude>README.txt</exclude>
+                <exclude>dist-maven/**</exclude>
+                <exclude>bin/*.sh</exclude>
+                <exclude>bin/zkServer.*</exclude>
+                <exclude>lib/jackson-*.jar</exclude>
+            </excludes>
+            <directoryMode>755</directoryMode>
+            <fileMode>0644</fileMode>
+        </fileSet>
+        <fileSet>
+            <directory>target/dependencies/zookeeper/apache-zookeeper-${zookeeper.version}-bin/bin</directory>
+            <outputDirectory>./zookeeper/bin</outputDirectory>
+            <includes>
+                <include>*.sh</include>
+            </includes>
+            <lineEnding>unix</lineEnding>
+            <directoryMode>755</directoryMode>
+            <fileMode>0755</fileMode>
+        </fileSet>
+        <fileSet>
+            <directory>zookeeper</directory>
+            <outputDirectory>./zookeeper</outputDirectory>
+            <filtered>true</filtered>
+            <directoryMode>755</directoryMode>
+            <fileMode>0644</fileMode>
+        </fileSet>
+
+        <!-- Copy over win bin/* separately to get the correct file mode -->
+        <fileSet>
+            <directory>target/container/bin</directory>
+            <outputDirectory>./container/bin</outputDirectory>
+            <includes>
+                <include>*.bat</include>
+            </includes>
+            <lineEnding>dos</lineEnding>
+            <fileMode>0644</fileMode>
+            <directoryMode>777</directoryMode>
+        </fileSet>
+
+        <!-- Copy over bin/* separately to get the correct file mode -->
+        <fileSet>
+            <directory>target/container/bin</directory>
+            <outputDirectory>./container/bin</outputDirectory>
+            <excludes>
+                <exclude>*.bat</exclude>
+            </excludes>
+            <lineEnding>unix</lineEnding>
+            <fileMode>0755</fileMode>
+            <directoryMode>777</directoryMode>
+        </fileSet>
+
+        <!-- Expanded ActiveMQ Runtime -->
+        <fileSet>
+            <directory>target/dependencies/activemq-unix/apache-activemq-${activemq.version}</directory>
+            <outputDirectory>./activemq</outputDirectory>
+            <excludes>
+                <exclude>bin/**</exclude>
+                <exclude>LICENSE</exclude>
+                <exclude>NOTICE</exclude>
+                <exclude>lib/optional/spring*.jar</exclude>
+                <exclude>lib/web/spring*.jar</exclude>
+            </excludes>
+        </fileSet>
+
+        <!-- Copy over unix activemq bin/ subdirectories -->
+        <fileSet>
+            <directory>target/dependencies/activemq-unix/apache-activemq-${activemq.version}/bin</directory>
+            <outputDirectory>./activemq/bin</outputDirectory>
+        </fileSet>
+
+        <!-- Copy over win activemq bin/ subdirectories -->
+        <fileSet>
+            <directory>target/dependencies/activemq-win/apache-activemq-${activemq.version}/bin</directory>
+            <outputDirectory>./activemq/bin</outputDirectory>
+            <includes>
+                <include>win*/**</include>
+                <include>*.bat</include>
+                <include>*.cmd</include>
+            </includes>
+        </fileSet>
+
+        <!-- Copy license and other files from root -->
+        <fileSet>
+            <directory>${basedir}/..</directory>
+            <outputDirectory>./</outputDirectory>
+            <includes>
+                <include>README.txt</include>
+                <include>NOTICE</include>
+            </includes>
+            <lineEnding>unix</lineEnding>
+            <fileMode>0644</fileMode>
+        </fileSet>
+        <fileSet>
+            <directory>target</directory>
+            <outputDirectory>./</outputDirectory>
+            <includes>
+                <include>LICENSE.txt</include>
+            </includes>
+            <lineEnding>unix</lineEnding>
+            <fileMode>0644</fileMode>
+        </fileSet>
+
+        <!-- Copy over the container README.txt -->
+        <fileSet>
+            <directory>${basedir}</directory>
+            <outputDirectory>./container</outputDirectory>
+            <includes>
+                <include>README.txt</include>
+            </includes>
+            <lineEnding>unix</lineEnding>
+            <fileMode>0644</fileMode>
+        </fileSet>
+        <fileSet>
+            <directory>target/classes</directory>
+            <outputDirectory>./container</outputDirectory>
+            <includes>
+                <include>version.txt</include>
+            </includes>
+            <lineEnding>unix</lineEnding>
+            <fileMode>0644</fileMode>
+        </fileSet>
+
+        <!-- Copy config files to container/etc -->
+        <fileSet>
+            <directory>src/main/distribution/text</directory>
+            <outputDirectory>./</outputDirectory>
+            <fileMode>0644</fileMode>
+            <directoryMode>777</directoryMode>
+        </fileSet>
+        <fileSet>
+            <directory>target/classes/etc</directory>
+            <outputDirectory>./container/etc/</outputDirectory>
+            <lineEnding>unix</lineEnding>
+            <fileMode>0644</fileMode>
+            <directoryMode>777</directoryMode>
+        </fileSet>
+        <fileSet>
+            <directory>target/dependencies/etc</directory>
+            <outputDirectory>./container/etc/</outputDirectory>
+            <lineEnding>unix</lineEnding>
+            <fileMode>0644</fileMode>
+            <directoryMode>777</directoryMode>
+        </fileSet>
+
+        <!-- Copy additional libs endorsed & jdk9plus -->
+        <fileSet>
+            <directory>target/container/lib</directory>
+            <outputDirectory>./container/lib</outputDirectory>
+            <fileMode>0644</fileMode>
+            <directoryMode>755</directoryMode>
+        </fileSet>
+
+        <!-- Copy Add-ons -->
+        <fileSet>
+            <directory>target/add-ons</directory>
+            <outputDirectory>./add-ons</outputDirectory>
+            <fileMode>0644</fileMode>
+            <directoryMode>755</directoryMode>
+        </fileSet>
+        <fileSet>
+            <directory>${basedir}/../sam/sam-server/target/classes</directory>
+            <outputDirectory>./add-ons/sam/db</outputDirectory>
+            <includes>
+                <include>*.sql</include>
+            </includes>
+            <lineEnding>unix</lineEnding>
+            <fileMode>0644</fileMode>
+            <directoryMode>755</directoryMode>
+        </fileSet>
+
+        <!-- Copy Locator proxy resources -->
+        <fileSet>
+            <directory>${basedir}/../locator-service/locator-service-common/src/main/resources/model</directory>
+            <outputDirectory>./add-ons/locator</outputDirectory>
+            <fileMode>0644</fileMode>
+            <directoryMode>755</directoryMode>
+        </fileSet>
+
+        <!-- SAP add-on -->
+        <fileSet>
+            <directory>sap</directory>
+            <outputDirectory>./add-ons/datasources/sap</outputDirectory>
+        </fileSet>
+
+        <!-- Copy Examples -->
+        <fileSet>
+            <directory>target/dependencies/bom</directory>
+            <outputDirectory>./examples/bom</outputDirectory>
+            <includes>
+                <include>pom.xml</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>target/dependencies/bom-common</directory>
+            <outputDirectory>./examples/bom-common</outputDirectory>
+            <includes>
+                <include>pom.xml</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>${basedir}/../examples</directory>
+            <outputDirectory>./examples/talend</outputDirectory>
+            <excludes>
+                <!-- Exclude maven build target directory -->
+                <exclude>**/target/**</exclude>
+                <!-- Exclude Eclipse files and directories -->
+                <exclude>**/.settings/**</exclude>
+                <exclude>**/.project</exclude>
+                <exclude>**/.classpath</exclude>
+                <!-- Exclude Intellij IDEA files and directories -->
+                <exclude>**/*.i??</exclude>
+                <!-- Exclude generated classes -->
+                <exclude>**/*_.java</exclude>
+            </excludes>
+        </fileSet>
+
+        <!-- Copy Adapters -->
+        <fileSet>
+            <directory>${basedir}/../adapters</directory>
+            <outputDirectory>./add-ons/adapters</outputDirectory>
+            <includes>
+                <include>nagios/**</include>
+                <include>README.txt</include>
+            </includes>
+        </fileSet>
+
+        <!-- Expanded Karaf Runtime -->
+        <fileSet>
+            <directory>target/dependencies/apache-karaf/apache-karaf-${karaf.version}</directory>
+            <outputDirectory>./container</outputDirectory>
+            <includes>
+                <include>data/**</include>
+                <include>deploy/**</include>
+                <include>lib/**</include>
+                <include>etc/**</include>
+                <include>system/README</include>
+                <include>system/**/*.jar</include>
+            </includes>
+            <excludes>
+                <exclude>lib/boot/org.apache.karaf.main-*.jar</exclude>
+                <exclude>system/org/ops4j/pax/logging/**</exclude>
+            </excludes>
+        </fileSet>
+    </fileSets>
+
+    <files>
+        <file>
+            <source>${basedir}/target/dependencies/pax-web-features-${pax-web.features.tesb.version}-features.xml</source>
+            <outputDirectory>./container/system/org/ops4j/pax/web/pax-web-features/${pax-web.features.tesb.version}/</outputDirectory>
+            <fileMode>0644</fileMode>
+            <lineEnding>unix</lineEnding>
+        </file>
+        <file>
+            <source>${basedir}/target/dependencies/apache-karaf-decanter-${decanter.features.tesb.version}-features.xml</source>
+            <outputDirectory>./container/system/org/apache/karaf/decanter/apache-karaf-decanter/${decanter.features.tesb.version}/</outputDirectory>
+            <fileMode>0644</fileMode>
+            <lineEnding>unix</lineEnding>
+        </file>
+        <!-- <file>
+            <source>${basedir}/target/dependencies/jclouds-karaf-${jclouds.features.tesb.version}-features.xml</source>
+            <outputDirectory>./container/system/org/apache/jclouds/karaf/jclouds-karaf/${jclouds.features.tesb.version}/</outputDirectory>
+            <fileMode>0644</fileMode>
+            <lineEnding>unix</lineEnding>
+        </file> -->
+        <file>
+            <source>${basedir}/target/dependencies/hibernate-validator-osgi-karaf-features-${hibernate-validator.features.tesb.version}-features.xml</source>
+            <outputDirectory>./container/system/org/hibernate/validator/hibernate-validator-osgi-karaf-features/${hibernate-validator.features.tesb.version}/</outputDirectory>
+            <fileMode>0644</fileMode>
+            <lineEnding>unix</lineEnding>
+        </file>
+        <file>
+            <source>${basedir}/target/dependencies/pax-jdbc-features-${pax-jdbc-features.features.tesb.version}-features.xml</source>
+            <outputDirectory>./container/system/org/ops4j/pax/jdbc/pax-jdbc-features/${pax-jdbc-features.features.tesb.version}/</outputDirectory>
+            <fileMode>0644</fileMode>
+            <lineEnding>unix</lineEnding>
+        </file>
+        <file>
+            <source>${basedir}/target/dependencies/openjpa-features-${openjpa-features.features.tesb.version}-features.xml</source>
+            <outputDirectory>./container/system/org/apache/openjpa/openjpa-features/${openjpa-features.features.tesb.version}/</outputDirectory>
+            <fileMode>0644</fileMode>
+            <lineEnding>unix</lineEnding>
+        </file>
+        <!-- <file>
+            <source>${basedir}/target/dependencies/h2-${h2.version}.jar</source>
+            <outputDirectory>./container/system/com/h2database/h2/${h2.version}/</outputDirectory>
+            <fileMode>0644</fileMode>
+        </file> -->
+        <file>
+            <source>${basedir}/target/features-repo/com/fasterxml/jackson/core/jackson-core/${jackson.version}/jackson-core-${jackson.version}.jar</source>
+            <outputDirectory>./zookeeper/lib/</outputDirectory>
+            <fileMode>0644</fileMode>
+        </file>
+        <file>
+            <source>${basedir}/target/features-repo/com/fasterxml/jackson/core/jackson-annotations/${jackson.version}/jackson-annotations-${jackson.version}.jar</source>
+            <outputDirectory>./zookeeper/lib/</outputDirectory>
+            <fileMode>0644</fileMode>
+        </file>
+        <file>
+            <source>${basedir}/target/features-repo/com/fasterxml/jackson/core/jackson-databind/${jackson-databind.version}/jackson-databind-${jackson-databind.version}.jar</source>
+            <outputDirectory>./zookeeper/lib/</outputDirectory>
+            <fileMode>0644</fileMode>
+        </file>
+        
+        <!-- activemq lib optional-->
+        <file>
+            <source>${basedir}/target/dependencies/activemq-unix/apache-activemq-${activemq.version}/lib/optional/spring-aop-${spring.version}.jar</source>
+            <outputDirectory>./activemq/lib/optional/</outputDirectory>
+            <fileMode>0644</fileMode>
+        </file>
+        <file>
+            <source>${basedir}/target/dependencies/activemq-unix/apache-activemq-${activemq.version}/lib/optional/spring-beans-${spring.version}.jar</source>
+            <outputDirectory>./activemq/lib/optional/</outputDirectory>
+            <fileMode>0644</fileMode>
+        </file>
+        <file>
+            <source>${basedir}/target/dependencies/activemq-unix/apache-activemq-${activemq.version}/lib/optional/spring-context-${spring.version}.jar</source>
+            <outputDirectory>./activemq/lib/optional/</outputDirectory>
+            <fileMode>0644</fileMode>
+        </file>
+        <file>
+            <source>${basedir}/target/dependencies/activemq-unix/apache-activemq-${activemq.version}/lib/optional/spring-core-${spring.version}.jar</source>
+            <outputDirectory>./activemq/lib/optional/</outputDirectory>
+            <fileMode>0644</fileMode>
+        </file>
+        <file>
+            <source>${basedir}/target/dependencies/activemq-unix/apache-activemq-${activemq.version}/lib/optional/spring-expression-${spring.version}.jar</source>
+            <outputDirectory>./activemq/lib/optional/</outputDirectory>
+            <fileMode>0644</fileMode>
+        </file>
+        <file>
+            <source>${basedir}/target/dependencies/activemq-unix/apache-activemq-${activemq.version}/lib/optional/spring-jms-${spring.version}.jar</source>
+            <outputDirectory>./activemq/lib/optional/</outputDirectory>
+            <fileMode>0644</fileMode>
+        </file>
+        <file>
+            <source>${basedir}/target/dependencies/activemq-unix/apache-activemq-${activemq.version}/lib/optional/spring-oxm-${spring.version}.jar</source>
+            <outputDirectory>./activemq/lib/optional/</outputDirectory>
+            <fileMode>0644</fileMode>
+        </file>
+        <file>
+            <source>${basedir}/target/dependencies/activemq-unix/apache-activemq-${activemq.version}/lib/optional/spring-tx-${spring.version}.jar</source>
+            <outputDirectory>./activemq/lib/optional/</outputDirectory>
+            <fileMode>0644</fileMode>
+        </file>
+        
+        <!-- activemq lib web-->
+        <file>
+            <source>${basedir}/target/dependencies/activemq-unix/apache-activemq-${activemq.version}/lib/web/spring-web-${spring.version}.jar</source>
+            <outputDirectory>./activemq/lib/web/</outputDirectory>
+            <fileMode>0644</fileMode>
+        </file>
+        <file>
+            <source>${basedir}/target/dependencies/activemq-unix/apache-activemq-${activemq.version}/lib/web/spring-webmvc-${spring.version}.jar</source>
+            <outputDirectory>./activemq/lib/web/</outputDirectory>
+            <fileMode>0644</fileMode>
+        </file>
+        
+        <!-- cxf lib -->
+        <file>
+            <source>${basedir}/target/dependencies/cxf/apache-cxf-${cxf.version}/lib/spring-aop-${spring.version}.jar</source>
+            <outputDirectory>./lib/</outputDirectory>
+            <fileMode>0644</fileMode>
+        </file>
+        <file>
+            <source>${basedir}/target/dependencies/cxf/apache-cxf-${cxf.version}/lib/spring-beans-${spring.version}.jar</source>
+            <outputDirectory>./lib/</outputDirectory>
+            <fileMode>0644</fileMode>
+        </file>
+        <file>
+            <source>${basedir}/target/dependencies/cxf/apache-cxf-${cxf.version}/lib/spring-context-${spring.version}.jar</source>
+            <outputDirectory>./lib/</outputDirectory>
+            <fileMode>0644</fileMode>
+        </file>
+        <file>
+            <source>${basedir}/target/dependencies/cxf/apache-cxf-${cxf.version}/lib/spring-core-${spring.version}.jar</source>
+            <outputDirectory>./lib/</outputDirectory>
+            <fileMode>0644</fileMode>
+        </file>
+        <file>
+            <source>${basedir}/target/dependencies/cxf/apache-cxf-${cxf.version}/lib/spring-expression-${spring.version}.jar</source>
+            <outputDirectory>./lib/</outputDirectory>
+            <fileMode>0644</fileMode>
+        </file>
+        <file>
+            <source>${basedir}/target/dependencies/cxf/apache-cxf-${cxf.version}/lib/spring-jcl-${spring.version}.jar</source>
+            <outputDirectory>./lib/</outputDirectory>
+            <fileMode>0644</fileMode>
+        </file>
+        <file>
+            <source>${basedir}/target/dependencies/cxf/apache-cxf-${cxf.version}/lib/spring-web-${spring.version}.jar</source>
+            <outputDirectory>./lib/</outputDirectory>
+            <fileMode>0644</fileMode>
+        </file>
+    </files>
+
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>./add-ons/sts</outputDirectory>
+            <outputFileNameMapping>SecurityTokenService.war</outputFileNameMapping>
+            <unpack>false</unpack>
+            <scope>runtime</scope>
+            <includes>
+                <include>org.talend.esb.sts:cxf-sts-war:war</include>
+            </includes>
+            <directoryMode>755</directoryMode>
+            <fileMode>0644</fileMode>
+            <useProjectArtifact>false</useProjectArtifact>
+        </dependencySet>
+    </dependencySets>
+
+</assembly>

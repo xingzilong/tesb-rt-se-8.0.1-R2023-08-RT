@@ -1,0 +1,48 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.talend.esb.policies</groupId>
+	<artifactId>esb-policies</artifactId>
+	<packaging>pom</packaging>
+	<name>Talend ESB :: Policies :: Parent</name>
+	<description>Parent module for Talend ESB policies</description>
+
+	<parent>
+		<artifactId>bom</artifactId>
+		<groupId>org.talend.esb</groupId>
+		<version>8.0.1-SNAPSHOT</version>
+        <relativePath>../bom</relativePath>
+	</parent>
+
+	<modules>
+		<module>compression-policy</module>
+		<module>correlationid-policy</module>
+		<module>samenabling-policy</module>
+        <module>transformation-policy</module>
+        <module>validation-policy</module>
+	</modules>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <includeScope>runtime</includeScope>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

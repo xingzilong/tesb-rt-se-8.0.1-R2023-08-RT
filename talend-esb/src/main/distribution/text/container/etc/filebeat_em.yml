@@ -1,0 +1,22 @@
+###################### Filebeat Configuration Example #########################
+
+#=========================== Filebeat inputs =============================
+
+filebeat.inputs:
+
+- type: log
+  enabled: true
+  paths:
+    - ${LOG_PATH:<update this path to point ${karaf.data}/eventmonitoring/em*.log*}
+  fields:
+    app_id: ${APP_NAME:ESB}
+  fields_under_root: true
+  json.keys_under_root: true
+  json.message_key: log
+
+logging.metrics.enabled: false
+#----------------------------- Logstash output --------------------------------
+output.logstash:
+  # The Logstash hosts
+  hosts: ["${LOGSTASH_HOSTS:localhost}:${LOGSTASH_PORT:5044}"]
+

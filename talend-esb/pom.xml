@@ -1,0 +1,1006 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2006-2021 Talend Inc. - www.talend.com
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.talend.esb</groupId>
+        <artifactId>bom</artifactId>
+        <version>8.0.1-SNAPSHOT</version>
+        <relativePath>../bom</relativePath>
+    </parent>
+
+    <groupId>org.talend.esb.assembly</groupId>
+    <artifactId>talend-esb</artifactId>
+    <name>Talend ESB :: Assembly</name>
+    <packaging>pom</packaging>
+    <description>Packages TESB_SE final product</description>
+
+    <properties>
+        <!-- used for version.txt -->
+        <build.number>local</build.number>
+        <tag_label />
+        <!-- used for assembly & dependency type, overwritten by dev-unix-assembly-only & dev-win-assembly-only profiles -->
+        <assembly.formats>tar.gz,zip</assembly.formats>
+        <file-extensions.to-clean>xml|cfg|war</file-extensions.to-clean>
+        <org.talend.script.cadm>admin</org.talend.script.cadm>
+        <org.talend.script.canf>anfang</org.talend.script.canf>
+        <org.talend.script.cclik>ck</org.talend.script.cclik>
+        <org.talend.script.cclis>cs</org.talend.script.cclis>
+        <org.talend.script.cinfix>SSW</org.talend.script.cinfix>
+        <org.talend.script.ckar>karaf</org.talend.script.ckar>
+        <org.talend.script.cpostfix>ORD</org.talend.script.cpostfix>
+        <org.talend.script.cprefix>PA</org.talend.script.cprefix>
+        <org.talend.script.cps>pass</org.talend.script.cps>
+        <org.talend.script.csrvk>sk</org.talend.script.csrvk>
+        <org.talend.script.csrvs>ss</org.talend.script.csrvs>
+        <org.talend.script.cstl>secret-tool lookup</org.talend.script.cstl>
+        <org.talend.script.ctad>tadmin</org.talend.script.ctad>
+        <org.talend.script.ctesb>tesb</org.talend.script.ctesb>
+        <org.talend.script.cwd>word</org.talend.script.cwd>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.talend.esb.sts</groupId>
+            <artifactId>cxf-sts-war</artifactId>
+            <type>war</type>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>${project.basedir}/src/main/filtered-resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>${project.basedir}/src/main/features</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>${project.basedir}/bin</directory>
+                <filtering>true</filtering>
+                <targetPath>bin</targetPath>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>filter</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>resources</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.karaf.tooling</groupId>
+                <artifactId>karaf-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>add-features-to-repo</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>features-add-to-repository</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <!-- descriptors without any repository dependency -->
+                                <!-- <descriptor>mvn:org.ops4j.pax.web/pax-web-features/${pax-web.features.tesb.version}/xml/features</descriptor> -->
+                                <descriptor>mvn:org.apache.cxf.karaf/apache-cxf/${cxf.features.tesb.version}/xml/features</descriptor>
+
+                                <!-- <descriptor>mvn:org.apache.jclouds.karaf/jclouds-karaf/${jclouds.features.tesb.version}/xml/features</descriptor> -->
+                                <descriptor>mvn:org.apache.camel.karaf/apache-camel/${camel.features.tesb.version}/xml/features</descriptor>
+
+                                <!-- <descriptor>mvn:org.hibernate.validator/hibernate-validator-osgi-karaf-features/${hibernate-validator.features.tesb.version}/xml/features</descriptor> -->
+                                <!-- <descriptor>mvn:org.ops4j.pax.cdi/pax-cdi-features/${pax-cdi-features.features.tesb.version}/xml/features</descriptor> -->
+                                <!-- <descriptor>mvn:org.ops4j.pax.jdbc/pax-jdbc-features/${pax-jdbc-features.features.tesb.version}/xml/features</descriptor> -->
+                                <descriptor>mvn:org.ops4j.pax.jms/pax-jms-features/${pax-jms-features.features.tesb.version}/xml/features</descriptor>
+                                <descriptor>mvn:org.ops4j.pax.transx/pax-transx-features/${pax-transx-features.tesb.version}/xml/features</descriptor>
+                                <!-- <descriptor>mvn:org.apache.karaf.decanter/apache-karaf-decanter/${decanter.features.tesb.version}/xml/features</descriptor> -->
+                                <descriptor>mvn:org.apache.aries.jpa/jpa-features/${jpa-features.features.tesb.version}/xml/features</descriptor>
+                                <!-- <descriptor>mvn:org.apache.openjpa/openjpa-features/${openjpa-features.features.tesb.version}/xml/features</descriptor> -->
+                                <descriptor>mvn:org.apache.karaf.features/enterprise/${enterprise.features.tesb.version}/xml/features</descriptor>
+
+                                <descriptor>mvn:org.apache.karaf.features/specs/${specs.features.tesb.version}/xml/features</descriptor>
+                                <descriptor>mvn:org.apache.karaf.features/standard/${standard.features.tesb.version}/xml/features</descriptor>
+                                <descriptor>mvn:org.apache.karaf.features/framework/${framework.features.tesb.version}/xml/features</descriptor>
+
+                                <!-- repository with dependencies already declared above -->
+                                <descriptor>mvn:org.apache.karaf.features/spring/${spring.features.tesb.version}/xml/features</descriptor>
+                                <descriptor>mvn:org.apache.karaf.features/spring-legacy/${spring-legacy.features.tesb.version}/xml/features</descriptor>
+
+                                <!-- repository with dependencies -->
+                                <descriptor>mvn:org.apache.activemq/activemq-karaf/${activemq.features.tesb.version}/xml/features-core</descriptor>
+                                <descriptor>mvn:org.apache.activemq/activemq-karaf/${activemq.features.tesb.version}/xml/features</descriptor>
+                                <descriptor>mvn:org.talend.esb.auxiliary.storage/auxiliary-storage-features/${project.version}/xml</descriptor>
+                                <descriptor>mvn:org.talend.esb/features/${esb.features.version}/xml</descriptor>
+
+                                <descriptor>file:${basedir}/target/dependencies/pax-web-features-${pax-web.features.tesb.version}-features.xml</descriptor>
+                                <descriptor>file:${basedir}/target/dependencies/apache-karaf-decanter-${decanter.features.tesb.version}-features.xml</descriptor>
+                                <!-- <descriptor>file:${basedir}/target/dependencies/jclouds-karaf-${jclouds.features.tesb.version}-features.xml</descriptor> -->
+                                <descriptor>file:${basedir}/target/dependencies/hibernate-validator-osgi-karaf-features-${hibernate-validator.features.tesb.version}-features.xml</descriptor>
+                                <descriptor>file:${basedir}/target/dependencies/pax-jdbc-features-${pax-jdbc-features.features.tesb.version}-features.xml</descriptor>
+                                <descriptor>file:${basedir}/target/dependencies/openjpa-features-${openjpa-features.features.tesb.version}-features.xml</descriptor>
+
+                                <!-- Non Maven features aren't copied to system -->
+                                <descriptor>${project.build.outputDirectory}/additional-bundles.xml</descriptor>
+                            </descriptors>
+                            <repository>target/features-repo</repository>
+
+                            <!-- do not resolve repository dependencies, this means all repository features HAVE TO BE declared above -->
+                            <resolveDefinedRepositoriesRecursively>false</resolveDefinedRepositoriesRecursively>
+                            <features>
+                                <!-- list of features to ignore -->
+                                <feature>^(?!(camel-cdi|cxf-jaxrs-cdi|camel-ignite|camel-json-validator|camel-zookeeper-master|pax-jms-artemis|activemq-camel|pax-cdi)$).*</feature>
+                            </features>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <!-- cfg files -->
+                                <artifactItem>
+                                    <groupId>org.talend.esb</groupId>
+                                    <artifactId>locator</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>cfg</type>
+                                    <classifier>org.talend.esb.locator</classifier>
+                                    <outputDirectory>target/dependencies/etc</outputDirectory>
+                                    <destFileName>org.talend.esb.locator.cfg</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.talend.esb</groupId>
+                                    <artifactId>sam-agent</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>cfg</type>
+                                    <classifier>org.talend.esb.sam.agent</classifier>
+                                    <outputDirectory>target/dependencies/etc</outputDirectory>
+                                    <destFileName>org.talend.esb.sam.agent.cfg</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.talend.esb</groupId>
+                                    <artifactId>bom</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>pom</type>
+                                    <outputDirectory>target/dependencies/bom</outputDirectory>
+                                    <destFileName>pom.xml</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.talend.esb</groupId>
+                                    <artifactId>bom-common</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>pom</type>
+                                    <outputDirectory>target/dependencies/bom-common</outputDirectory>
+                                    <destFileName>pom.xml</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.ops4j.pax.web</groupId>
+                                    <artifactId>pax-web-features</artifactId>
+                                    <version>${pax-web.features.tesb.version}</version>
+                                    <type>xml</type>
+                                    <classifier>features</classifier>
+                                    <outputDirectory>target/dependencies</outputDirectory>
+                                    <destFileName>pax-web-features-${pax-web.features.tesb.version}-features.xml</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.apache.karaf.decanter</groupId>
+                                    <artifactId>apache-karaf-decanter</artifactId>
+                                    <version>${decanter.features.tesb.version}</version>
+                                    <type>xml</type>
+                                    <classifier>features</classifier>
+                                    <outputDirectory>target/dependencies</outputDirectory>
+                                    <destFileName>apache-karaf-decanter-${decanter.features.tesb.version}-features.xml</destFileName>
+                                </artifactItem>
+                                <!-- <artifactItem>
+                                    <groupId>org.apache.jclouds.karaf</groupId>
+                                    <artifactId>jclouds-karaf</artifactId>
+                                    <version>${jclouds.features.tesb.version}</version>
+                                    <type>xml</type>
+                                    <classifier>features</classifier>
+                                    <outputDirectory>target/dependencies</outputDirectory>
+                                    <destFileName>jclouds-karaf-${jclouds.features.tesb.version}-features.xml</destFileName>
+                                </artifactItem> -->
+                                <artifactItem>
+                                    <groupId>org.hibernate.validator</groupId>
+                                    <artifactId>hibernate-validator-osgi-karaf-features</artifactId>
+                                    <version>${hibernate-validator.features.tesb.version}</version>
+                                    <type>xml</type>
+                                    <classifier>features</classifier>
+                                    <outputDirectory>target/dependencies</outputDirectory>
+                                    <destFileName>hibernate-validator-osgi-karaf-features-${hibernate-validator.features.tesb.version}-features.xml</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.ops4j.pax.jdbc</groupId>
+                                    <artifactId>pax-jdbc-features</artifactId>
+                                    <version>${pax-jdbc-features.features.tesb.version}</version>
+                                    <type>xml</type>
+                                    <classifier>features</classifier>
+                                    <outputDirectory>target/dependencies</outputDirectory>
+                                    <destFileName>pax-jdbc-features-${pax-jdbc-features.features.tesb.version}-features.xml</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.apache.openjpa</groupId>
+                                    <artifactId>openjpa-features</artifactId>
+                                    <version>${openjpa-features.features.tesb.version}</version>
+                                    <type>xml</type>
+                                    <classifier>features</classifier>
+                                    <outputDirectory>target/dependencies</outputDirectory>
+                                    <destFileName>openjpa-features-${openjpa-features.features.tesb.version}-features.xml</destFileName>
+                                </artifactItem>
+                                <!-- <artifactItem>
+                                    <groupId>com.h2database</groupId>
+                                    <artifactId>h2</artifactId>
+                                    <version>${h2.version}</version>
+                                    <type>jar</type>
+                                    <outputDirectory>target/dependencies</outputDirectory>
+                                    <destFileName>h2-${h2.version}.jar</destFileName>
+                                </artifactItem> -->
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-boot</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>target/container/lib/boot</outputDirectory>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.apache.karaf</groupId>
+                                    <artifactId>org.apache.karaf.main</artifactId>
+                                    <version>${karaf-launcher.version}</version>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-endorsed</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>target/container/lib/endorsed</outputDirectory>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>com.sun.istack</groupId>
+                                    <artifactId>istack-commons-runtime</artifactId>
+                                    <version>3.0.7</version>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.sun.activation</groupId>
+                                    <artifactId>jakarta.activation</artifactId>
+                                    <version>1.2.1</version>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>jakarta.xml.soap</groupId>
+                                    <artifactId>jakarta.xml.soap-api</artifactId>
+                                    <version>1.4.1</version>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.apache.servicemix.bundles</groupId>
+                                    <artifactId>org.apache.servicemix.bundles.jaxb-runtime</artifactId>
+                                    <version>2.3.1_1</version>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.apache.servicemix.bundles</groupId>
+                                    <artifactId>org.apache.servicemix.bundles.jaxb-xjc</artifactId>
+                                    <version>2.3.1_1</version>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.apache.servicemix.bundles</groupId>
+                                    <artifactId>org.apache.servicemix.bundles.saaj-impl</artifactId>
+                                    <version>1.3.23_2</version>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.apache.servicemix.bundles</groupId>
+                                    <artifactId>org.apache.servicemix.bundles.xerces</artifactId>
+                                    <version>2.12.0_1</version>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.apache.servicemix.specs</groupId>
+                                    <artifactId>org.apache.servicemix.specs.jaxb-api-2.3</artifactId>
+                                    <version>2.3_3</version>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.jvnet.staxex</groupId>
+                                    <artifactId>stax-ex</artifactId>
+                                    <version>1.8.1</version>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>javax.jcr</groupId>
+                                    <artifactId>jcr</artifactId>
+                                    <version>2.0</version>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-activemq-lib-optional</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>target/dependencies/activemq-unix/apache-activemq-${activemq.version}/lib/optional</outputDirectory>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.springframework</groupId>
+                                    <artifactId>spring-aop</artifactId>
+                                    <version>${spring.version}</version>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.springframework</groupId>
+                                    <artifactId>spring-beans</artifactId>
+                                    <version>${spring.version}</version>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.springframework</groupId>
+                                    <artifactId>spring-context</artifactId>
+                                    <version>${spring.version}</version>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.springframework</groupId>
+                                    <artifactId>spring-core</artifactId>
+                                    <version>${spring.version}</version>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.springframework</groupId>
+                                    <artifactId>spring-expression</artifactId>
+                                    <version>${spring.version}</version>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.springframework</groupId>
+                                    <artifactId>spring-jms</artifactId>
+                                    <version>${spring.version}</version>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.springframework</groupId>
+                                    <artifactId>spring-oxm</artifactId>
+                                    <version>${spring.version}</version>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.springframework</groupId>
+                                    <artifactId>spring-tx</artifactId>
+                                    <version>${spring.version}</version>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-activemq-lib-web</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>target/dependencies/activemq-unix/apache-activemq-${activemq.version}/lib/web</outputDirectory>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.springframework</groupId>
+                                    <artifactId>spring-web</artifactId>
+                                    <version>${spring.version}</version>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.springframework</groupId>
+                                    <artifactId>spring-webmvc</artifactId>
+                                    <version>${spring.version}</version>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-cxf-lib</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>target/dependencies/cxf/apache-cxf-${cxf.version}/lib</outputDirectory>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.springframework</groupId>
+                                    <artifactId>spring-aop</artifactId>
+                                    <version>${spring.version}</version>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.springframework</groupId>
+                                    <artifactId>spring-beans</artifactId>
+                                    <version>${spring.version}</version>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.springframework</groupId>
+                                    <artifactId>spring-context</artifactId>
+                                    <version>${spring.version}</version>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.springframework</groupId>
+                                    <artifactId>spring-core</artifactId>
+                                    <version>${spring.version}</version>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.springframework</groupId>
+                                    <artifactId>spring-expression</artifactId>
+                                    <version>${spring.version}</version>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.springframework</groupId>
+                                    <artifactId>spring-jcl</artifactId>
+                                    <version>${spring.version}</version>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.springframework</groupId>
+                                    <artifactId>spring-web</artifactId>
+                                    <version>${spring.version}</version>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-jdk9plus</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>target/container/lib/jdk9plus</outputDirectory>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>jakarta.xml.soap</groupId>
+                                    <artifactId>jakarta.xml.soap-api</artifactId>
+                                    <version>1.4.1</version>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.apache.servicemix.bundles</groupId>
+                                    <artifactId>org.apache.servicemix.bundles.saaj-impl</artifactId>
+                                    <version>1.5.1_1</version>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.apache.servicemix.bundles</groupId>
+                                    <artifactId>org.apache.servicemix.bundles.xerces</artifactId>
+                                    <version>2.12.0_1</version>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.jvnet.staxex</groupId>
+                                    <artifactId>stax-ex</artifactId>
+                                    <version>1.8.1</version>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>javax.jcr</groupId>
+                                    <artifactId>jcr</artifactId>
+                                    <version>2.0</version>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>unpack-karaf</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.apache.karaf</groupId>
+                                    <artifactId>apache-karaf</artifactId>
+                                    <version>${karaf.version}</version>
+                                    <type>tar.gz</type>
+                                    <outputDirectory>target/dependencies/apache-karaf</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>unpack-camel</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <skip>true</skip>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.apache.camel</groupId>
+                                    <artifactId>apache-camel</artifactId>
+                                    <version>${camel.version}</version>
+                                    <type>tar.gz</type>
+                                    <outputDirectory>target/dependencies/camel</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>unpack-cxf</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.apache.cxf</groupId>
+                                    <artifactId>apache-cxf</artifactId>
+                                    <version>${cxf.version}</version>
+                                    <type>tar.gz</type>
+                                    <outputDirectory>target/dependencies/cxf</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>unpack-zookeeper</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.apache.zookeeper</groupId>
+                                    <artifactId>zookeeper</artifactId>
+                                    <version>${zookeeper.version}</version>
+                                    <classifier>bin</classifier>
+                                    <type>tar.gz</type>
+                                    <outputDirectory>target/dependencies/zookeeper</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>unpack-activemq</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <!-- must be decompressed twice as apache-activemq tar.gz/zip contents are different -->
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.apache.activemq</groupId>
+                                    <artifactId>apache-activemq</artifactId>
+                                    <version>${activemq.version}</version>
+                                    <type>tar.gz</type>
+                                    <classifier>bin</classifier>
+                                    <outputDirectory>target/dependencies/activemq-unix</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.apache.activemq</groupId>
+                                    <artifactId>apache-activemq</artifactId>
+                                    <version>${activemq.version}</version>
+                                    <type>zip</type>
+                                    <classifier>bin</classifier>
+                                    <outputDirectory>target/dependencies/activemq-win</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>collect-add-ons</id>
+                        <phase>generate-resources</phase>
+                        <configuration>
+                            <target>
+                                <patternset id="no.sources.javadoc">
+                                    <exclude name="**/target/*-sources.*" />
+                                    <exclude name="**/target/*-javadoc.*" />
+                                </patternset>
+                                <copy todir="target/add-ons/sam">
+                                    <fileset dir="${basedir}/../sam">
+                                        <include name="**/target/*.jar" />
+                                        <include name="**/target/*.war" />
+                                        <exclude name="**/sam-example*.*" />
+                                        <patternset refid="no.sources.javadoc" />
+                                    </fileset>
+                                    <flattenmapper />
+                                </copy>
+                                <copy todir="target/add-ons/locator">
+                                    <fileset dir="${basedir}/../locator">
+                                        <include name="**/target/*.jar" />
+                                        <include name="**/target/*.war" />
+                                        <patternset refid="no.sources.javadoc" />
+                                    </fileset>
+                                    <fileset dir="${basedir}/../locator-service">
+                                        <include name="**/target/*.jar" />
+                                        <patternset refid="no.sources.javadoc" />
+                                    </fileset>
+                                    <flattenmapper />
+                                </copy>
+                                <copy todir="target/add-ons/locator">
+                                    <fileset dir="${basedir}/../locator-service/locator-service-common/src/main/resources/model">
+                                        <include name="**/*.*" />
+                                    </fileset>
+                                </copy>
+                                <copy todir="target/add-ons/job">
+                                    <fileset dir="${basedir}/../job">
+                                        <include name="**/target/*.jar" />
+                                        <include name="**/target/*.war" />
+                                        <patternset refid="no.sources.javadoc" />
+                                    </fileset>
+                                    <flattenmapper />
+                                </copy>
+                                <copy todir="target/add-ons/datasources/sap">
+                                    <fileset dir="${basedir}/../talend-sapjco3-connector">
+                                        <include name="**/target/*.jar" />
+                                        <patternset refid="no.sources.javadoc" />
+                                    </fileset>
+                                    <flattenmapper />
+                                </copy>
+                                <copy todir="target/add-ons/registry/lib">
+                                    <fileset dir="${basedir}/../policies">
+                                        <include name="**/target/*.jar" />
+                                        <include name="**/target/*.war" />
+                                        <patternset refid="no.sources.javadoc" />
+                                    </fileset>
+                                    <flattenmapper />
+                                </copy>
+                                <selector id="not.already.in">
+                                    <none>
+                                        <present targetdir="target/dependencies/camel/apache-camel-${camel.version}/lib">
+                                            <mapper type="flatten" />
+                                        </present>
+                                        <present targetdir="target/dependencies/cxf/apache-cxf-${cxf.version}/lib">
+                                            <mapper type="flatten" />
+                                        </present>
+                                        <present targetdir="target/dependencies/cxf/apache-cxf-${cxf.version}/modules">
+                                            <mapper type="flatten" />
+                                        </present>
+                                        <present targetdir="target/add-ons/sam">
+                                            <mapper type="flatten" />
+                                        </present>
+                                        <present targetdir="target/add-ons/locator">
+                                            <mapper type="flatten" />
+                                        </present>
+                                        <present targetdir="target/add-ons/job">
+                                            <mapper type="flatten" />
+                                        </present>
+                                        <present targetdir="target/add-ons/registry/lib">
+                                            <mapper type="flatten" />
+                                        </present>
+                                    </none>
+                                </selector>
+                                <copy todir="target/add-ons/lib">
+                                    <fileset dir="${basedir}/../sam">
+                                        <include name="**/target/dependency/*.jar" />
+                                        <selector refid="not.already.in" />
+                                    </fileset>
+                                    <fileset dir="${basedir}/../locator">
+                                        <include name="**/target/dependency/*.jar" />
+                                        <selector refid="not.already.in" />
+                                    </fileset>
+                                    <fileset dir="${basedir}/../job">
+                                        <include name="**/target/dependency/*.jar" />
+                                        <selector refid="not.already.in" />
+                                    </fileset>
+                                    <fileset dir="${basedir}/../policies">
+                                        <include name="**/target/dependency/*.jar" />
+                                        <selector refid="not.already.in" />
+                                    </fileset>
+                                    <flattenmapper />
+                                </copy>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>patch-features-files</id>
+                        <phase>generate-resources</phase>
+                        <configuration>
+                            <target>
+                                <replace file="target/dependencies/pax-web-features-${pax-web.features.tesb.version}-features.xml">
+                                    <replacefilter
+                                        token="&gt;mvn:com.fasterxml.jackson.core/jackson-annotations/2.14.2&lt;"
+                                        value="&gt;mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson.version}&lt;"/>
+                                    <replacefilter
+                                        token="&gt;mvn:com.fasterxml.jackson.core/jackson-core/2.14.2&lt;"
+                                        value="&gt;mvn:com.fasterxml.jackson.core/jackson-core/${jackson.version}&lt;"/>
+                                    <replacefilter
+                                        token="&gt;mvn:com.fasterxml.jackson.core/jackson-databind/2.14.2&lt;"
+                                        value="&gt;mvn:com.fasterxml.jackson.core/jackson-databind/${jackson-databind.version}&lt;"/>
+                                </replace>
+                                <replace file="target/dependencies/apache-karaf-decanter-${decanter.features.tesb.version}-features.xml">
+                                    <replacefilter
+                                        token="jackson-databind/2.13.1&lt;"
+                                        value="jackson-databind/${jackson-databind.version}&lt;"/>
+                                    <replacefilter
+                                        token="jackson-databind/2.12.0&lt;"
+                                        value="jackson-databind/${jackson-databind.version}&lt;"/>
+                                    <replacefilter
+                                        token="jackson-databind/2.9.8&lt;"
+                                        value="jackson-databind/${jackson-databind.version}&lt;"/>
+                                    <replacefilter
+                                        token="/2.13.1&lt;"
+                                        value="/${jackson.version}&lt;"/>
+                                    <replacefilter
+                                        token="/2.12.0&lt;"
+                                        value="/${jackson.version}&lt;"/>
+                                    <replacefilter
+                                        token="/2.9.8&lt;"
+                                        value="/${jackson.version}&lt;"/>
+                                    <replacefilter
+                                        token="/4.1.45.Final&lt;"
+                                        value="/${netty.version}&lt;"/>
+                                    <replacefilter
+                                        token="&gt;mvn:com.google.guava/guava/25.1-jre&lt;"
+                                        value="&gt;mvn:com.google.guava/guava/${guava.version}&lt;"/>
+                                    <replacefilter
+                                        token="&gt;mvn:com.sun.mail/javax.mail/1.6.2&lt;"
+                                        value="&gt;mvn:com.sun.mail/jakarta.mail/${javax.mail.version}&lt;"/>
+                                </replace>
+                                <!-- <replace file="target/dependencies/jclouds-karaf-${jclouds.features.tesb.version}-features.xml">
+                                    <replacefilter
+                                        token="&gt;mvn:org.yaml/snakeyaml/1.17&lt;"
+                                        value="&gt;mvn:org.yaml/snakeyaml/${snakeyaml.version}&lt;"/>
+                                    <replacefilter
+                                        token="&gt;mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.javax-inject/1_1&lt;"
+                                        value="&gt;mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.javax-inject/${javax.inject.bundle.version}&lt;"/>
+                                    <replacefilter
+                                        token="&gt;mvn:org.bouncycastle/bcpkix-jdk15on/1.51&lt;"
+                                        value="&gt;mvn:org.bouncycastle/bcpkix-jdk18on/${bouncycastle.version}&lt;/bundle&gt;&#10;        &lt;bundle dependency='true'&gt;mvn:org.bouncycastle/bcutil-jdk18on/${bouncycastle.version}&lt;"/>
+                                    <replacefilter
+                                        token="-jdk15on/1.51&lt;"
+                                        value="-jdk18on/${bouncycastle.version}&lt;"/>
+                                    <replacefilter
+                                        token="&gt;mvn:com.google.guava/guava/18.0&lt;"
+                                        value="&gt;mvn:com.google.guava/guava/${guava.version}&lt;"/>
+                                    <replacefilter
+                                        token="bundle dependency='true'&gt;mvn:com.google.code.gson/gson/2.5&lt;"
+                                        value="bundle&gt;wrap:mvn:com.google.code.gson/gson/${gson-jclouds.version}$overwrite=merge&amp;amp;Export-Package=com.google.gson.*;version=${gson-jclouds.version}&lt;"/>
+                                    <replacefilter
+                                        token="&gt;mvn:org.apache.jclouds/"
+                                        value="&gt;wrap:mvn:org.apache.jclouds/"/>
+                                    <replacefilter
+                                        token="/${jclouds.features.tesb.version}&lt;/bundle&gt;"
+                                        value="/${jclouds.features.tesb.version}$overwrite=merge&amp;amp;Import-Package=com.google.common.*;version='${guava-jclouds.version-range}',com.google.gson.*;version='${gson-jclouds.version-range}',*&lt;/bundle&gt;"/>
+                                    <replacefilter
+                                        token="&gt;mvn:org.apache.httpcomponents/httpclient-osgi/4.3.4&lt;"
+                                        value="&gt;mvn:org.apache.httpcomponents/httpclient-osgi/${httpclient.version}&lt;"/>
+                                    <replacefilter
+                                        token="&gt;mvn:org.apache.httpcomponents/httpcore-osgi/4.3.2&lt;"
+                                        value="&gt;mvn:org.apache.httpcomponents/httpcore-osgi/${httpcore.version}&lt;"/>
+                                    <replacefilter
+                                        token="&gt;mvn:org.codehaus.groovy/groovy/2.4.4&lt;"
+                                        value="&gt;mvn:org.codehaus.groovy/groovy/${groovy2.version}&lt;"/>
+                                    <replacefilter
+                                        token="&gt;mvn:org.codehaus.groovy/groovy-jsr223/2.4.4&lt;"
+                                        value="&gt;mvn:org.codehaus.groovy/groovy-jsr223/${groovy2.version}&lt;"/>
+                                </replace> -->
+                                <replace file="target/dependencies/hibernate-validator-osgi-karaf-features-${hibernate-validator.features.tesb.version}-features.xml">
+                                    <replacefilter
+                                        token="&gt;mvn:org.codehaus.groovy/groovy-all/2.4.12&lt;"
+                                        value="&gt;mvn:org.codehaus.groovy/groovy-all/${groovy2.version}&lt;"/>
+                                </replace>
+                                <replace file="target/dependencies/pax-jdbc-features-${pax-jdbc-features.features.tesb.version}-features.xml">
+                                    <replacefilter
+                                        token="&gt;mvn:com.h2database/h2/2.2.220&lt;"
+                                        value="&gt;mvn:com.h2database/h2/${h2.version}&lt;"/>
+                                    <replacefilter
+                                        token="&gt;mvn:org.postgresql/postgresql/42.6.0&lt;"
+                                        value="&gt;mvn:org.postgresql/postgresql/${postgresql-jdbc.version}&lt;"/>
+                                    <replacefilter
+                                        token="&gt;mvn:org.xerial/sqlite-jdbc/3.42.0.0&lt;"
+                                        value="&gt;mvn:org.xerial/sqlite-jdbc/${sqlite-jdbc.version}&lt;"/>
+                                </replace>
+                                <replace file="target/dependencies/openjpa-features-${openjpa-features.features.tesb.version}-features.xml">
+                                    <replacefilter
+                                        token="&gt;mvn:org.apache.commons/commons-pool2/2.9.0&lt;"
+                                        value="&gt;mvn:org.apache.commons/commons-pool2/${commons-pool2.version}&lt;"/>
+                                </replace>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>convert-snapshot-file-names</id>
+                        <phase>process-resources</phase>
+                        <configuration>
+                            <target>
+                                <!-- convert file names from versioned to non-versioned SNAPSHOTs (TESB-25311) -->
+                                <move todir="target/features-repo">
+                                    <fileset dir="target/features-repo" />
+                                    <mapper type="regexp" from="^(.*)-[0-9]{8}\.[0-9]{6}-[0-9]*(.*)$" to="\1-SNAPSHOT\2" />
+                                </move>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>copy-needed-bin-scripts</id>
+                        <phase>process-resources</phase>
+                        <configuration>
+                            <target>
+                                <echo message="Copy all bin/* files" />
+                                <copy todir="target/container/bin" overwrite="true">
+                                    <fileset dir="target/dependencies/apache-karaf/apache-karaf-${karaf.version}/bin">
+                                        <include name="contrib/*" />
+                                        <include name="client" />
+                                        <include name="client.bat" />
+                                        <include name="inc" />
+                                        <include name="karaf" />
+                                        <include name="karaf.bat" />
+                                        <include name="setenv" />
+                                        <include name="setenv.bat" />
+                                        <include name="start" />
+                                        <include name="start.bat" />
+                                        <include name="stop" />
+                                        <include name="stop.bat" />
+                                    </fileset>
+                                </copy>
+                                <echo message="Rename karaf* to trun*" />
+                                <move file="target/container/bin/karaf" tofile="target/container/bin/trun" />
+                                <move file="target/container/bin/karaf.bat" tofile="target/container/bin/trun.bat" />
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>update-bin-scripts</id>
+                        <phase>process-resources</phase>
+                        <configuration>
+                            <target>
+                                <ant antfile="src/main/descriptors/bin-build.xml">
+                                    <target name="process-bin"/>
+                                </ant>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>clean-obsolete</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <skip>false</skip>
+                            <target name="Clean obsolete dependencies">
+                                <delete includeemptydirs="true" verbose="false" failonerror="false">
+                                    <fileset dir="target/features-repo/com/fasterxml/jackson" includes="**/2.9.8/**,**/2.12.0/**" />
+                                    <fileset dir="target/features-repo/org/eclipse/jetty/aggregate" />
+                                    <fileset dir="target/features-repo/org/yaml/snakeyaml/1.17" />
+                                    <fileset dir="target/features-repo/org/springframework" />
+                                    <fileset dir="target/features-repo/io/netty/netty-codec-http2" includes="**/4.1.79.Final/**" />
+                                    <fileset dir="target/features-repo/io/netty/netty-transport-classes-epoll" includes="**/4.1.79.Final/**" />
+                                    <fileset dir="target/features-repo/io/netty/netty-common" includes="**/4.1.79.Final/**,**/4.1.85.Final/**" />
+                                    <fileset dir="target/features-repo/io/netty/netty-resolver" includes="**/4.1.79.Final/**,**/4.1.85.Final/**" />
+                                    <fileset dir="target/features-repo/io/netty/netty-transport-native-epoll" includes="**/4.1.79.Final/**,**/4.1.85.Final/**" />
+                                    <fileset dir="target/features-repo/io/netty/netty-transport-native-unix-common" includes="**/4.1.79.Final/**,**/4.1.85.Final/**" />
+                                    <fileset dir="target/features-repo/io/netty/netty-handler-proxy" includes="**/4.1.79.Final/**,**/4.1.85.Final/**" />
+                                    <fileset dir="target/features-repo/io/netty/netty-buffer" includes="**/4.1.79.Final/**,**/4.1.85.Final/**" />
+                                    <fileset dir="target/features-repo/io/netty/netty-transport-native-kqueue" includes="**/4.1.79.Final/**,**/4.1.85.Final/**" />
+                                    <fileset dir="target/features-repo/io/netty/netty-handler" includes="**/4.1.79.Final/**,**/4.1.85.Final/**" />
+                                    <fileset dir="target/features-repo/io/netty/netty-codec-http" includes="**/4.1.79.Final/**,**/4.1.85.Final/**" />
+                                    <fileset dir="target/features-repo/io/netty/netty-transport" includes="**/4.1.79.Final/**,**/4.1.85.Final/**" />
+                                    <fileset dir="target/features-repo/io/netty/netty-codec-socks" includes="**/4.1.79.Final/**,**/4.1.85.Final/**" />
+                                    <fileset dir="target/features-repo/io/netty/netty-codec" includes="**/4.1.79.Final/**,**/4.1.85.Final/**" />
+                                    <fileset dir="target/features-repo/org/codehaus/jettison/jettison" includes="**/1.5.3/**" />
+                                </delete>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>bin</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <!-- <skipAssembly>true</skipAssembly> -->
+                            <descriptors>
+                                <descriptor>src/main/descriptors/assembly.xml</descriptor>
+                            </descriptors>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <tarLongFileMode>gnu</tarLongFileMode>
+                            <finalName>TESB_SE-V${packages.version}</finalName>
+                            <formats>${assembly.formats}</formats>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <!-- specific profiles for building only tar.gz or zip distributions -->
+    <profiles>
+        <profile>
+            <id>tag-label</id>
+            <activation>
+                <property>
+                    <name>tag</name>
+                </property>
+            </activation>
+            <properties>
+                <tag_label>_${tag}</tag_label>
+            </properties>
+        </profile>
+        <profile>
+            <id>dev-unix-assembly-only</id>
+            <properties>
+                <assembly.formats>tar.gz</assembly.formats>
+            </properties>
+        </profile>
+        <profile>
+            <id>dev-win-assembly-only</id>
+            <properties>
+                <assembly.formats>zip</assembly.formats>
+            </properties>
+        </profile>
+        <profile>
+            <id>dev-dir-assembly-only</id>
+            <properties>
+                <assembly.formats>dir</assembly.formats>
+            </properties>
+        </profile>
+    </profiles>
+</project>
+

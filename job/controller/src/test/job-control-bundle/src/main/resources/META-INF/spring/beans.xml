@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  #%L
+  Talend :: ESB :: Job :: Controller
+  %%
+  Copyright (c) 2006-2021 Talend Inc. - www.talend.com
+  %%
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  #L%
+  -->
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:jaxws="http://cxf.apache.org/jaxws"
+    xmlns:osgi="http://www.springframework.org/schema/osgi"
+	xsi:schemaLocation="
+		http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd
+		http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
+	"
+>
+    <!-- (1) SL
+    <import resource="classpath:META-INF/tesb/locator/beans-osgi.xml" />
+     -->
+    <!-- (2) SAM
+    <import resource="classpath:META-INF/tesb/agent-osgi.xml" />
+     -->
+
+	<jaxws:endpoint
+		xmlns:serviceNamespace="http://customerservice.example.com/"
+		serviceName="serviceNamespace:CustomerServiceService"
+		endpointName="serviceNamespace:CustomerServicePort"
+		address="http://localhost:9090/CustomerServicePort"
+		wsdlLocation="classpath:/model/CustomerService.wsdl"
+		implementor="#genericServiceProvider"
+		id="service"
+	>
+	    <jaxws:features>
+		    <!-- (1) SL
+			<bean class="org.talend.esb.servicelocator.cxf.LocatorFeature"/>
+		     -->
+		    <!-- (2) SAM
+			<ref bean="eventFeature"/>
+		     -->
+	    </jaxws:features>
+    </jaxws:endpoint>
+
+	<bean id="genericServiceProvider" class="org.talend.esb.job.controller.GenericServiceProvider">
+		<property name="operations">
+			<map>
+				<entry>
+					<key><value>getCustomersByName</value></key>
+					<value>ProviderJob</value>
+				</entry>
+				<entry>
+					<key><value>updateCustomer</value></key>
+					<value>ESBProvider2</value>
+				</entry>
+			</map>
+		</property>
+        <property name="jobLauncher">
+		    <osgi:reference interface="org.talend.esb.job.controller.JobLauncher"/>
+        </property>
+	    <!-- (2) SAM
+        <property name="eventFeature" ref="eventFeature"/>
+	     -->
+	</bean>
+
+	<osgi:service ref="genericServiceProvider" interface="org.osgi.service.cm.ManagedService">
+		<osgi:service-properties>
+			<entry key="service.pid" value="CustomerService" />
+		</osgi:service-properties>
+	</osgi:service>
+
+	<osgi:service ref="service" interface="javax.xml.ws.Endpoint">
+		<osgi:service-properties>
+			<entry key="name" value="CustomerService" />
+			<entry key="type" value="service" />
+		</osgi:service-properties>
+	</osgi:service>
+
+</beans>

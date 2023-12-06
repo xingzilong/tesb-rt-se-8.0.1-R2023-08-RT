@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  #%L
+  Talend :: ESB :: Job :: Controller
+  %%
+  Copyright (c) 2006-2021 Talend Inc. - www.talend.com
+  %%
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  #L%
+  -->
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+        xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.2.0" >
+
+    <reference id="policyProvider" interface="org.talend.esb.security.policy.PolicyProvider" />
+
+    <cm:cm-properties persistent-id="org.talend.esb.job.client" id="org.talend.esb.job.client" />
+
+    <bean id="sigCryptoPropertiesFactory" class="org.talend.cxf.crypto.config.CryptoPropertiesFactory">
+        <property name="defaultProperties">
+            <map>
+                <entry key="org.apache.wss4j.crypto.provider" value="org.apache.wss4j.common.crypto.Merlin"/>
+                <entry key="org.apache.wss4j.crypto.merlin.keystore.type" value="jks"/>
+                <entry key="org.apache.wss4j.crypto.merlin.keystore.password" value=""/>
+                <entry key="org.apache.wss4j.crypto.merlin.keystore.alias" value="myclientkey"/>
+                <entry key="org.apache.wss4j.crypto.merlin.keystore.file" value="./etc/keystores/clientstore.jks"/>
+            </map>
+        </property>
+        <property name="propertiesSource" value="file:./etc/keystores/clientKeystore.properties"/>
+        <property name="updatedProperties">
+            <cm:cm-properties persistent-id="org.talend.esb.job.client.sig.keystore"/>
+        </property>
+    </bean>
+
+    <bean id="sigCryptoProperties" factory-ref="sigCryptoPropertiesFactory" factory-method="createProperties"/>
+
+    <bean id="endpointRegistry" class="org.talend.esb.job.controller.internal.RuntimeESBEndpointRegistry">
+        <property name="bus" >
+            <cxf:bus xmlns:cxf="http://cxf.apache.org/blueprint/core" />
+        </property>
+        <property name="samFeature" >
+            <reference interface="org.talend.esb.sam.agent.feature.EventFeature" />
+        </property>
+        <property name="locatorFeature" >
+            <reference interface="org.talend.esb.servicelocator.cxf.LocatorFeature" />
+        </property>
+        <property name="policyProvider" ref="policyProvider" />
+        <property name="clientProperties" ref="org.talend.esb.job.client" />
+        <property name="clientPropertiesOverride">
+            <map>
+                <entry key="security.signature.properties" value-ref="sigCryptoProperties" />
+            </map>
+        </property>
+        <property name="cryptoProvider" >
+            <reference interface="org.apache.wss4j.common.crypto.Crypto"
+                availability="optional" timeout="100" filter="(type=client-crypto)" />
+        </property>
+        <property name="stsClientCreator" >
+            <reference interface="org.talend.esb.security.saml.STSClientCreator" />
+        </property>
+    </bean>
+
+    <bean id="jobLauncher" class="org.talend.esb.job.controller.internal.JobLauncherImpl"
+            destroy-method="unbind">
+        <property name="bundleContext" ref="blueprintBundleContext" />
+        <property name="executorService" >
+            <bean class="org.talend.esb.job.controller.internal.JobExecutorFactory"
+                factory-method="newExecutor" />
+        </property>
+        <property name="endpointRegistry" ref="endpointRegistry" />
+    </bean>
+
+    <bean id="jobTracker" class="org.talend.esb.job.controller.internal.JobTracker"
+            init-method="bind" destroy-method="unbind" >
+        <property name="bundleContext" ref="blueprintBundleContext" />
+        <property name="jobListener" ref="jobLauncher" />
+    </bean>
+
+    <bean id="providerFactory" class="org.talend.esb.job.controller.internal.ProviderFactoryImpl">
+        <property name="jobLauncher" ref="jobLauncher" />
+        <property name="policyProvider" ref="policyProvider" />
+    </bean>
+    <service interface="org.talend.esb.job.controller.ProviderFactory" ref="providerFactory" />
+
+</blueprint>
