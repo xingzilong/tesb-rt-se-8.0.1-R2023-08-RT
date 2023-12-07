@@ -19,24 +19,25 @@
  */
 package org.talend.esb.sam.service.soap;
 
+import org.apache.cxf.helpers.IOUtils;
+import org.talend.esb.sam._2011._03.common.CustomInfoType;
+import org.talend.esb.sam._2011._03.common.EventEnumType;
+import org.talend.esb.sam._2011._03.common.EventType;
+import org.talend.esb.sam._2011._03.common.HttpInfoType;
+import org.talend.esb.sam._2011._03.common.MessageInfoType;
+import org.talend.esb.sam._2011._03.common.OriginatorType;
+import org.talend.esb.sam.common.event.Event;
+import org.talend.esb.sam.common.event.EventTypeEnum;
+import org.talend.esb.sam.common.event.HttpInfo;
+import org.talend.esb.sam.common.event.MessageInfo;
+import org.talend.esb.sam.common.event.Originator;
+
+import javax.activation.DataHandler;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.activation.DataHandler;
-
-import org.apache.cxf.helpers.IOUtils;
-import org.talend.esb.sam._2011._03.common.CustomInfoType;
-import org.talend.esb.sam._2011._03.common.EventEnumType;
-import org.talend.esb.sam._2011._03.common.EventType;
-import org.talend.esb.sam._2011._03.common.MessageInfoType;
-import org.talend.esb.sam._2011._03.common.OriginatorType;
-import org.talend.esb.sam.common.event.Event;
-import org.talend.esb.sam.common.event.EventTypeEnum;
-import org.talend.esb.sam.common.event.MessageInfo;
-import org.talend.esb.sam.common.event.Originator;
 
 /**
  * The Class EventTypeMapper used for mapping EventTypes.
@@ -64,6 +65,8 @@ public final class EventTypeMapper {
         event.setOriginator(mapOriginatorType(eventType.getOriginator()));
         MessageInfo messageInfo = mapMessageInfo(eventType.getMessageInfo());
         event.setMessageInfo(messageInfo);
+        HttpInfo httpInfo = mapHttpInfoType(eventType.getHttpInfo());
+        event.setHttpInfo(httpInfo);
         String content = mapContent(eventType.getContent());
         event.setContent(content);
         event.getCustomInfo().clear();
@@ -124,6 +127,31 @@ public final class EventTypeMapper {
             messageInfo.setTransportType(messageInfoType.getTransport());
         }
         return messageInfo;
+    }
+
+    /**
+     * 映射 httpInfo type.
+     * 访问控制功能新增
+     *
+     * @param httpInfoType httpInfo type
+     * @return httpInfo
+     */
+    private static HttpInfo mapHttpInfoType(HttpInfoType httpInfoType) {
+        HttpInfo httpInfo = new HttpInfo();
+        if (httpInfoType != null) {
+            httpInfo.setServiceKey(httpInfoType.getServiceKey() == null ? "" : httpInfoType.getServiceKey());
+            httpInfo.setHttpMethod(httpInfoType.getHttpMethod() == null ? "" : httpInfoType.getHttpMethod());
+            httpInfo.setUri(httpInfoType.getUri() == null ? "" : httpInfoType.getUri());
+            httpInfo.setQueryString(httpInfoType.getQueryString() == null ? "" : httpInfoType.getQueryString());
+            httpInfo.setProtocol(httpInfoType.getProtocol() == null ? "" : httpInfoType.getProtocol());
+            httpInfo.setHttpHeaders(httpInfoType.getHttpHeaders());
+            httpInfo.setConsumerIP(httpInfoType.getConsumerIP() == null ? "" : httpInfoType.getConsumerIP());
+            httpInfo.setHttpStatus(httpInfoType.getHttpStatus());
+            httpInfo.setResponseTime(httpInfoType.getResponseTime());
+            httpInfo.setFailureCause(httpInfoType.getFailureCause() == null ? "" : httpInfoType.getFailureCause());
+            httpInfo.setMessageType(httpInfoType.getMessageType() == null ? "" : httpInfoType.getMessageType());
+        }
+        return httpInfo;
     }
 
     /**

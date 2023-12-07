@@ -72,6 +72,8 @@ public class Event implements Serializable {
     //@Column(name = "MESSAGE_CONTENT")
     private String content;
 
+    private HttpInfo httpInfo;
+
     private Map<String, String> customInfo = new HashMap<String, String>();
 
     /**
@@ -169,6 +171,20 @@ public class Event implements Serializable {
      */
     public void setMessageInfo(MessageInfo messageInfo) {
         this.messageInfo = messageInfo;
+    }
+
+    /**
+     * 获取 http info，访问控制功能增加
+     */
+    public HttpInfo getHttpInfo() {
+        return httpInfo;
+    }
+
+    /**
+     * 设置 http info，访问控制功能增加
+     */
+    public void setHttpInfo(HttpInfo httpInfo) {
+        this.httpInfo = httpInfo;
     }
 
     /**

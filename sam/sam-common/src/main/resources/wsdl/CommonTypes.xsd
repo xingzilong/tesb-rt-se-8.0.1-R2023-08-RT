@@ -13,7 +13,8 @@
             <element name="originator" type="tns:originatorType"/>
 			<element name="messageInfo" type="tns:messageInfoType"/>
             <element name="customInfo" type="tns:customInfoType" />
-            <element name="contentCut" type="boolean"/>
+			<element name="httpInfo" type="tns:httpInfoType" />
+			<element name="contentCut" type="boolean"/>
 			<element name="content" type="base64Binary" xmime:expectedContentTypes="application/octet-stream"/>
 		</sequence>
 	</complexType>
@@ -35,6 +36,22 @@
 			<element name="hostname" type="string"/>
 			<element maxOccurs="1" minOccurs="0" name="customId" type="string"/>
             <element name="principal" type="string"/>
+		</sequence>
+	</complexType>
+
+	<complexType name="httpInfoType">
+		<sequence>
+			<element name="serviceKey" type="string" default=""/>
+			<element name="httpMethod" type="string" default=""/>
+			<element name="uri" type="string" default=""/>
+			<element name="queryString" type="string" default=""/>
+			<element name="protocol" type="string" default=""/>
+			<element name="httpHeaders" type="string" default=""/>
+			<element name="consumerIP" type="string" default=""/>
+			<element name="httpStatus" type="int"/>
+			<element name="responseTime" type="long"/>
+			<element name="failureCause" type="string" default=""/>
+			<element name="messageType" type="string"/>
 		</sequence>
 	</complexType>
 

@@ -40,6 +40,9 @@ import org.apache.cxf.ws.addressing.soap.MAPCodec;
 import org.ops4j.pax.cdi.api.OsgiServiceProvider;
 import org.springframework.beans.factory.annotation.Value;
 
+import org.talend.esb.sam.agent.ac.flow.FlowInterceptor;
+import org.talend.esb.sam.agent.ac.frequency.FrequencyInterceptor;
+import org.talend.esb.sam.agent.ac.ip.IPInterceptor;
 import org.talend.esb.sam.agent.eventproducer.EventProducerInterceptor;
 import org.talend.esb.sam.agent.eventproducer.MessageToEventMapper;
 import org.talend.esb.sam.agent.flowidprocessor.FlowIdProducerIn;
@@ -129,6 +132,18 @@ public class EventFeatureImpl extends AbstractFeature implements EventFeature{
         WireTapOut wireTapOut = new WireTapOut(epi, logMessageContent, logMessageContentOverride);
         provider.getOutInterceptors().add(wireTapOut);
         provider.getOutFaultInterceptors().add(wireTapOut);
+
+        IPInterceptor ipInterceptor = new IPInterceptor();
+        provider.getInInterceptors().add(ipInterceptor);
+        provider.getInFaultInterceptors().add(ipInterceptor);
+
+        FlowInterceptor flowInterceptor = new FlowInterceptor();
+        provider.getInInterceptors().add(flowInterceptor);
+        provider.getInFaultInterceptors().add(flowInterceptor);
+
+        FrequencyInterceptor frequencyInterpector = new FrequencyInterceptor();
+        provider.getInInterceptors().add(frequencyInterpector);
+        provider.getInFaultInterceptors().add(frequencyInterpector);
 
     }
 

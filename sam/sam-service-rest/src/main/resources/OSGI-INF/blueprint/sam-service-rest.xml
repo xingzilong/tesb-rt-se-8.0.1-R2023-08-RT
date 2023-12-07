@@ -43,9 +43,16 @@
         <property name="provider" ref="providerBean" />
     </bean>
 
+    <reference id="acProviderBean" interface="org.talend.esb.sam.server.persistence.ac.ACProvider" />
+
+    <bean id="acRestService" class="org.talend.esb.sam.service.rest.ac.ACRestServiceImpl">
+        <property name="acProvider" ref="acProviderBean" />
+    </bean>
+
     <jaxrs:server id="SAMRestService" address="/sam">
         <jaxrs:serviceBeans>
             <ref component-id="restService" />
+            <ref component-id="acRestService" />
         </jaxrs:serviceBeans>
         <jaxrs:providers>
             <bean class="org.talend.esb.sam.service.rest.SAMExceptionMapper" />

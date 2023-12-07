@@ -29,6 +29,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 
 import org.talend.esb.sam.common.event.Event;
+import org.talend.esb.sam.common.event.HttpInfo;
 import org.talend.esb.sam.common.event.MessageInfo;
 import org.talend.esb.sam.common.event.Originator;
 import org.talend.esb.sam.common.event.persistence.EventRepository;
@@ -67,24 +68,34 @@ public class EventRepositoryImpl extends JdbcDaoSupport implements EventReposito
     public void writeEvent(Event event) {
         Originator originator = event.getOriginator();
         MessageInfo messageInfo = event.getMessageInfo();
+        HttpInfo httpInfo = event.getHttpInfo();
 
         long id = dbDialect.getIncrementer().nextLongValue();
         event.setPersistedId(id);
 
         getJdbcTemplate()
-            .update("insert into EVENTS (ID, EI_TIMESTAMP, EI_EVENT_TYPE,"
-                    + " ORIG_PROCESS_ID, ORIG_IP, ORIG_HOSTNAME, "
-                    + " ORIG_CUSTOM_ID, ORIG_PRINCIPAL,"
-                    + " MI_MESSAGE_ID, MI_FLOW_ID, MI_PORT_TYPE,"
-                    + " MI_OPERATION_NAME, MI_TRANSPORT_TYPE,"
-                    + " CONTENT_CUT, MESSAGE_CONTENT) "
-                    + " values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-                    event.getPersistedId(), event.getTimestamp(), event.getEventType().toString(),
-                    originator.getProcessId(), originator.getIp(), originator.getHostname(),
-                    originator.getCustomId(), originator.getPrincipal(),
-                    messageInfo.getMessageId(), messageInfo.getFlowId(), messageInfo.getPortType(),
-                    messageInfo.getOperationName(), messageInfo.getTransportType(),
-                    event.isContentCut(), event.getContent());
+                .update("insert into EVENTS (ID, EI_TIMESTAMP, EI_EVENT_TYPE,"
+                                + " ORIG_PROCESS_ID, ORIG_IP, ORIG_HOSTNAME, "
+                                + " ORIG_CUSTOM_ID, ORIG_PRINCIPAL,"
+                                + " MI_MESSAGE_ID, MI_FLOW_ID, MI_PORT_TYPE,"
+                                + " MI_OPERATION_NAME, MI_TRANSPORT_TYPE,"
+                                + " SERVICE_KEY, "
+                                + " HTTP_METHOD, URI, QUERYSTRING,"
+                                + " PROTOCOL, HTTP_HEADERS, CONSUMER_IP,"
+                                + " HTTP_STATUS, RESPONSE_TIME, FAILURE_CAUSE,"
+                                + " MESSAGE_TYPE,"
+                                + " CONTENT_CUT, MESSAGE_CONTENT) "
+                                + " values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                        event.getPersistedId(), event.getTimestamp(), event.getEventType().toString(),
+                        originator.getProcessId(), originator.getIp(), originator.getHostname(),
+                        originator.getCustomId(), originator.getPrincipal(),
+                        messageInfo.getMessageId(), messageInfo.getFlowId(), messageInfo.getPortType(),
+                        messageInfo.getOperationName(), messageInfo.getTransportType(),
+                        httpInfo.getServiceKey(),
+                        httpInfo.getHttpMethod(), httpInfo.getUri(), httpInfo.getQueryString(),
+                        httpInfo.getProtocol(), httpInfo.getHttpHeaders(), httpInfo.getConsumerIP(),
+                        httpInfo.getHttpStatus(), httpInfo.getResponseTime(), httpInfo.getFailureCause(),
+                        httpInfo.getMessageType(), event.isContentCut(), event.getContent());
 
         writeCustomInfo(event);
 

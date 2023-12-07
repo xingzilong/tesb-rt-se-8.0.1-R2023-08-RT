@@ -19,6 +19,11 @@
     <dependencies>
         <dependency>
             <groupId>org.talend.esb</groupId>
+            <artifactId>sam-agent</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.talend.esb</groupId>
             <artifactId>sam-server</artifactId>
         </dependency>
 

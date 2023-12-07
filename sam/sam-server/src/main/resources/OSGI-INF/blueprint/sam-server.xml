@@ -65,4 +65,18 @@
     </bean>
 
     <service ref="providerBean" interface="org.talend.esb.sam.server.persistence.SAMProvider" />
+
+    <bean id="acProviderBean" class="org.talend.esb.sam.server.persistence.ac.ACProviderImpl" init-method="init">
+        <property name="dataSource" ref="datasource"/>
+        <property name="dialect" value="${db.dialect}" />
+    </bean>
+
+    <service ref="acProviderBean" interface="org.talend.esb.sam.server.persistence.ac.ACProvider" />
+
+    <bean class="org.talend.esb.sam.server.persistence.ac.ACInitializer" init-method="init" destroy-method="destroy">
+        <property name="acProvider" ref="acProviderBean"/>
+        <property name="enableRecordTable" value="${enableRecordTable}"/>
+        <property name="startDelay" value="${startDelay}"/>
+        <property name="scanIntervall" value="${scanIntervall}"/>
+    </bean>
 </blueprint>

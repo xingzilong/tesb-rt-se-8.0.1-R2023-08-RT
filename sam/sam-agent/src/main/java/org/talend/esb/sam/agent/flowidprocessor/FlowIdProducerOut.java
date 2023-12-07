@@ -20,6 +20,7 @@
 package org.talend.esb.sam.agent.flowidprocessor;
 
 import java.lang.ref.WeakReference;
+import java.util.Date;
 import java.util.ListIterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -34,7 +35,10 @@ import org.apache.cxf.phase.Phase;
 import org.apache.cxf.phase.PhaseInterceptorChain;
 import org.apache.cxf.ws.addressing.ContextUtils;
 import org.talend.esb.sam.agent.eventproducer.EventProducerInterceptor;
+import org.talend.esb.sam.agent.message.ConsumerIPHelper;
+import org.talend.esb.sam.agent.message.FailureCauseHelper;
 import org.talend.esb.sam.agent.message.FlowIdHelper;
+import org.talend.esb.sam.agent.message.RequestTimeHelper;
 
 /**
  * The Class FlowIdProducerOut used for writing FlowId in outcoming messages.
@@ -109,6 +113,22 @@ public class FlowIdProducerOut<T extends Message> extends
         }
 
         String reqFid = FlowIdHelper.getFlowId(reqMsg);
+
+        // 访问控制新增，完善http请求响应的记录信息
+        // FlowIdProducerIn -> EventProducerInterceptor -> FlowIdProducerOut -> EventProducerInterceptor
+        // 以上为拦截其的顺序。要在FlowIdProducerOut这里进行重新获取并设置ResquestTime，
+        // 在EventProducerInterceptor才能够正常获取到ResquestTime。
+        // 目前不明白具体原因，猜测应该是和拦截器的阶段有关系。
+        //
+        // 响应时长
+        Date requestTime = RequestTimeHelper.getRequestTime(reqMsg);
+        RequestTimeHelper.setRequestTime(message, requestTime);
+        // 调用失败原因
+        String failureCause = FailureCauseHelper.getFailureCause(reqMsg);
+        FailureCauseHelper.setFailureCause(message, failureCause);
+        // 响应时长
+        String consumerIP = ConsumerIPHelper.getConsumerIP(reqMsg);
+        ConsumerIPHelper.setConsumerIP(message, consumerIP);
 
         // if some interceptor throws fault before FlowIdProducerIn fired
         if (reqFid == null) {

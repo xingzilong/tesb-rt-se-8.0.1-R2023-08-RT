@@ -19,23 +19,24 @@
  */
 package org.talend.esb.sam.agent.serviceclient;
 
-import java.io.UnsupportedEncodingException;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.activation.DataHandler;
-import javax.xml.namespace.QName;
-
 import org.apache.cxf.attachment.ByteDataSource;
 import org.talend.esb.sam._2011._03.common.CustomInfoType;
 import org.talend.esb.sam._2011._03.common.EventEnumType;
 import org.talend.esb.sam._2011._03.common.EventType;
 import org.talend.esb.sam._2011._03.common.MessageInfoType;
 import org.talend.esb.sam._2011._03.common.OriginatorType;
+import org.talend.esb.sam._2011._03.common.HttpInfoType;
 import org.talend.esb.sam.agent.util.Converter;
 import org.talend.esb.sam.common.event.Event;
+import org.talend.esb.sam.common.event.HttpInfo;
 import org.talend.esb.sam.common.event.MessageInfo;
 import org.talend.esb.sam.common.event.Originator;
+
+import javax.activation.DataHandler;
+import javax.xml.namespace.QName;
+import java.io.UnsupportedEncodingException;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * The Class EventMapper using for mapping and converting events.
@@ -62,6 +63,8 @@ public final class EventMapper {
         eventType.setOriginator(origType);
         MessageInfoType miType = mapMessageInfo(event.getMessageInfo());
         eventType.setMessageInfo(miType);
+        HttpInfoType httpInfoType = mapHttpInfo(event.getHttpInfo());
+        eventType.setHttpInfo(httpInfoType);
         eventType.setCustomInfo(convertCustomInfo(event.getCustomInfo()));
         eventType.setContentCut(event.isContentCut());
         if (event.getContent() != null) {
@@ -121,6 +124,31 @@ public final class EventMapper {
         origType.setCustomId(originator.getCustomId());
         origType.setPrincipal(originator.getPrincipal());
         return origType;
+    }
+
+    /**
+     * 映射 httpInfo.
+     * 访问控制功能新增
+     *
+     * @param httpInfo httpInfo
+     * @return httpInfo type
+     */
+    private static HttpInfoType mapHttpInfo(HttpInfo httpInfo) {
+        HttpInfoType httpInfoType = new HttpInfoType();
+        if (httpInfo != null) {
+            httpInfoType.setServiceKey(httpInfo.getServiceKey());
+            httpInfoType.setHttpMethod(httpInfo.getHttpMethod());
+            httpInfoType.setUri(httpInfo.getUri());
+            httpInfoType.setQueryString(httpInfo.getQueryString() == null ? "" : httpInfo.getQueryString());
+            httpInfoType.setProtocol(httpInfo.getProtocol());
+            httpInfoType.setHttpHeaders(httpInfo.getHttpHeaders());
+            httpInfoType.setConsumerIP(httpInfo.getConsumerIP());
+            httpInfoType.setHttpStatus(httpInfo.getHttpStatus());
+            httpInfoType.setResponseTime(httpInfo.getResponseTime());
+            httpInfoType.setFailureCause(httpInfo.getFailureCause() == null ? "" : httpInfo.getFailureCause());
+            httpInfoType.setMessageType(httpInfo.getMessageType() == null ? "" : httpInfo.getMessageType());
+        }
+        return httpInfoType;
     }
 
     /**

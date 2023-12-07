@@ -27,6 +27,7 @@ import org.apache.cxf.helpers.IOUtils;
 import org.springframework.jdbc.core.RowMapper;
 import org.talend.esb.sam.common.event.Event;
 import org.talend.esb.sam.common.event.EventTypeEnum;
+import org.talend.esb.sam.common.event.HttpInfo;
 import org.talend.esb.sam.common.event.MessageInfo;
 import org.talend.esb.sam.common.event.Originator;
 
@@ -60,6 +61,21 @@ public class EventRowMapper implements RowMapper<Event> {
         messageInfo.setOperationName(rs.getString("MI_OPERATION_NAME"));
         messageInfo.setTransportType(rs.getString("MI_TRANSPORT_TYPE"));
         event.setMessageInfo(messageInfo);
+
+        HttpInfo httpInfo = new HttpInfo();
+        httpInfo.setServiceKey(rs.getString("SERVICE_KEY"));
+        httpInfo.setHttpMethod(rs.getString("HTTP_METHOD"));
+        httpInfo.setUri(rs.getString("URI"));
+        httpInfo.setQueryString(rs.getString("QUERYSTRING"));
+        httpInfo.setProtocol(rs.getString("PROTOCOL"));
+        httpInfo.setHttpHeaders(rs.getString("HTTP_HEADERS"));
+        httpInfo.setConsumerIP(rs.getString("CONSUMER_IP"));
+        httpInfo.setHttpStatus(rs.getInt("HTTP_STATUS"));
+        httpInfo.setResponseTime(rs.getLong("RESPONSE_TIME"));
+        httpInfo.setFailureCause(rs.getString("FAILURE_CAUSE"));
+        httpInfo.setMessageType(rs.getString("MESSAGE_TYPE"));
+        event.setHttpInfo(httpInfo);
+
         event.setContentCut(rs.getBoolean("CONTENT_CUT"));
         try {
             event.setContent(IOUtils.toString(rs.getClob("MESSAGE_CONTENT").getAsciiStream()));

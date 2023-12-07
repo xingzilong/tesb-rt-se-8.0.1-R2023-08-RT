@@ -20,35 +20,52 @@
 package org.talend.esb.sam.agent.eventproducer;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamReader;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import org.apache.cxf.binding.soap.SoapBinding;
 import org.apache.cxf.binding.soap.model.SoapBindingInfo;
 import org.apache.cxf.configuration.security.AuthorizationPolicy;
 import org.apache.cxf.io.CachedOutputStream;
+import org.apache.cxf.message.Exchange;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.message.MessageUtils;
 import org.apache.cxf.security.SecurityContext;
 import org.apache.cxf.service.model.BindingOperationInfo;
 import org.apache.cxf.service.model.ServiceInfo;
+import org.apache.cxf.transport.http.AbstractHTTPDestination;
 import org.apache.cxf.ws.addressing.AddressingProperties;
 import org.apache.cxf.ws.addressing.ContextUtils;
 //import org.apache.cxf.ws.addressing.impl.AddressingPropertiesImpl;
 import org.apache.cxf.service.model.ServiceModelUtil;
+import org.talend.esb.sam.agent.ac.util.Constants;
+import org.talend.esb.sam.agent.ac.util.IPUtil;
 import org.talend.esb.sam.agent.feature.EventFeature;
+import org.talend.esb.sam.agent.message.ConsumerIPHelper;
 import org.talend.esb.sam.agent.message.CorrelationIdHelper;
 import org.talend.esb.sam.agent.message.CustomInfo;
+import org.talend.esb.sam.agent.message.FailureCauseHelper;
 import org.talend.esb.sam.agent.message.FlowIdHelper;
+import org.talend.esb.sam.agent.message.RequestTimeHelper;
 import org.talend.esb.sam.agent.util.Converter;
 import org.talend.esb.sam.common.event.Event;
 import org.talend.esb.sam.common.event.EventTypeEnum;
+import org.talend.esb.sam.common.event.HttpInfo;
 import org.talend.esb.sam.common.event.MessageInfo;
 import org.talend.esb.sam.common.event.Originator;
 
@@ -63,6 +80,8 @@ public class MessageToEventMapper {
     private static final String CUT_END_TAG = "]]></cut>";
 
     private int maxContentLength = -1;
+
+    private Gson gson = new Gson();
 
     /**
      * Map to event.
@@ -85,6 +104,8 @@ public class MessageToEventMapper {
         event.setEventType(null);
         Date date = new Date();
         event.setTimestamp(date);
+        HttpInfo httpInfo = new HttpInfo();
+        event.setHttpInfo(httpInfo);
 
 //        if (isRestMessage) {
 //            String queryString = (String) message.get(Message.QUERY_STRING);
@@ -129,10 +150,10 @@ public class MessageToEventMapper {
             event.getCustomInfo().putAll(customProp);
         }
 
-        String addr = message.getExchange().getEndpoint().getEndpointInfo().getAddress();
-        if (null != addr) {
-            event.getCustomInfo().put("address", addr);
-        }
+//        String addr = message.getExchange().getEndpoint().getEndpointInfo().getAddress();
+//        if (null != addr) {
+//            event.getCustomInfo().put("address", addr);
+//        }
 
         String correlationId = CorrelationIdHelper.getCorrelationId(message);
         if (null != correlationId) {
@@ -149,35 +170,35 @@ public class MessageToEventMapper {
         }
         originator.setProcessId(Converter.getPID());
 
-        if (isRestMessage) {
-            //String queryString = (String) message.get(Message.QUERY_STRING);
-            //if (null == queryString && null != message.getExchange().getInMessage()) {
-            //    queryString = (String) message.getExchange().getInMessage().get(Message.QUERY_STRING);
-            //}
-            //if (null != queryString) {
-            //    event.getCustomInfo().put("Query String", queryString);
-            //}
-
-            String accept = (String) message.get(Message.ACCEPT_CONTENT_TYPE);
-            if (null != accept) {
-                event.getCustomInfo().put("Accept Type", accept);
-            }
-
-            //String httpMethod = (String) message.get(Message.HTTP_REQUEST_METHOD);
-            //if (null != httpMethod) {
-            //    event.getCustomInfo().put("HTTP Method", httpMethod);
-            //}
-
-            String contentType = (String) message.get(Message.CONTENT_TYPE);
-            if (null != contentType) {
-                event.getCustomInfo().put("Content Type", contentType);
-            }
-
-            Integer responseCode = (Integer) message.get(Message.RESPONSE_CODE);
-            if (null != responseCode) {
-                event.getCustomInfo().put("Response Code", responseCode.toString());
-            }
-        }
+//        if (isRestMessage) {
+//            //String queryString = (String) message.get(Message.QUERY_STRING);
+//            //if (null == queryString && null != message.getExchange().getInMessage()) {
+//            //    queryString = (String) message.getExchange().getInMessage().get(Message.QUERY_STRING);
+//            //}
+//            //if (null != queryString) {
+//            //    event.getCustomInfo().put("Query String", queryString);
+//            //}
+//
+//            String accept = (String) message.get(Message.ACCEPT_CONTENT_TYPE);
+//            if (null != accept) {
+//                event.getCustomInfo().put("Accept Type", accept);
+//            }
+//
+//            //String httpMethod = (String) message.get(Message.HTTP_REQUEST_METHOD);
+//            //if (null != httpMethod) {
+//            //    event.getCustomInfo().put("HTTP Method", httpMethod);
+//            //}
+//
+//            String contentType = (String) message.get(Message.CONTENT_TYPE);
+//            if (null != contentType) {
+//                event.getCustomInfo().put("Content Type", contentType);
+//            }
+//
+//            Integer responseCode = (Integer) message.get(Message.RESPONSE_CODE);
+//            if (null != responseCode) {
+//                event.getCustomInfo().put("Response Code", responseCode.toString());
+//            }
+//        }
 
         SecurityContext sc = message.get(SecurityContext.class);
         if (sc != null && sc.getUserPrincipal() != null) {
@@ -197,6 +218,81 @@ public class MessageToEventMapper {
         CustomInfo customInfo = CustomInfo.getOrCreateCustomInfo(message);
         // System.out.println("custom props: " + customInfo);
         event.getCustomInfo().putAll(customInfo);
+
+        // 访问控制新增，完善http请求响应的记录信息 2023-06-16 xingzilong
+        // 判断是请求还是响应
+        Exchange exchange = message.getExchange();
+        Message inMessage = exchange.getInMessage();
+        Message outMessage = exchange.getOutMessage();
+        HttpServletRequest httpServletRequest = (HttpServletRequest) message.get(AbstractHTTPDestination.HTTP_REQUEST);
+        HttpServletResponse httpServletResponse = (HttpServletResponse) message.get(AbstractHTTPDestination.HTTP_RESPONSE);
+        if (inMessage == message && httpServletRequest != null) {
+            // 处理请求逻辑
+            HttpServletRequest request = (HttpServletRequest) message.get(AbstractHTTPDestination.HTTP_REQUEST);
+            httpInfo.setMessageType(Constants.MESSAGE_TYPE_REQ);
+            httpInfo.setHttpMethod(request.getMethod());
+            httpInfo.setUri(request.getRequestURI());
+            httpInfo.setQueryString(request.getQueryString() == null ? "" : request.getQueryString());
+            httpInfo.setProtocol(request.getProtocol());
+            Enumeration headerNames = request.getHeaderNames();
+            HashMap<String, String> requestHeaders = new HashMap<String, String>();
+            //使用循环遍历请求头，并通过getHeader()方法获取一个指定名称的头字段
+            while (headerNames.hasMoreElements()) {
+                String headerName = (String) headerNames.nextElement();
+                requestHeaders.put(headerName, request.getHeader(headerName));
+            }
+            // 定义 Map 类型
+            Type hashMapType = new TypeToken<HashMap<String, String>>() {
+            }.getType();
+            httpInfo.setHttpHeaders(gson.toJson(requestHeaders, hashMapType));
+            httpInfo.setHttpStatus(0);
+            httpInfo.setResponseTime(0L);
+            RequestTimeHelper.setRequestTime(message, date);
+            String consumerIP = IPUtil.getConsumerIP(request);
+            if (null != consumerIP) {
+                httpInfo.setConsumerIP(consumerIP);
+                ConsumerIPHelper.setConsumerIP(message, consumerIP);
+            }
+        }
+        // 很烦，我也不想知道怎么能明确的判断何时为请求，何时为响应，主要是代理时处理的不完美。
+        // 毫无章法可言，存在httpServletRequest、httpServletResponse都为空的情况。
+        // 暂时约定代理时不要对第二个构件进行勾选SAM选项，即只勾选第一个构件的SAM选项。
+        // 以上述约定，可保证暂时没问题。 xingzilong 2023-07-13
+        if ((outMessage == message || httpServletRequest == null) && httpServletResponse != null) {
+            // 处理响应逻辑
+            HttpServletResponse response = (HttpServletResponse) message.get(AbstractHTTPDestination.HTTP_RESPONSE);
+            httpInfo.setMessageType(Constants.MESSAGE_TYPE_RESP);
+            httpInfo.setHttpMethod("");
+            httpInfo.setUri("");
+            httpInfo.setQueryString("");
+            httpInfo.setProtocol("");
+            Collection<String> headerNames = response.getHeaderNames();
+            HashMap<String, String> responseHeaders = new HashMap<>();
+            //使用循环遍历请求头，并通过getHeader()方法获取一个指定名称的头字段
+            Iterator<String> iterator = headerNames.iterator();
+            while (iterator.hasNext()) {
+                String headerName = iterator.next();
+                responseHeaders.put(headerName, response.getHeader(headerName));
+            }
+            // 定义 Map 类型
+            Type hashMapType = new TypeToken<HashMap<String, String>>() {
+            }.getType();
+            httpInfo.setHttpHeaders(gson.toJson(responseHeaders, hashMapType));
+            httpInfo.setHttpStatus((Integer) message.get(Message.RESPONSE_CODE));
+            Date resquestTime = RequestTimeHelper.getRequestTime(message);
+            httpInfo.setResponseTime(date.getTime() - resquestTime.getTime());
+            if ((Integer) message.get(Message.RESPONSE_CODE) != 200) {
+                //提取失败原因
+                httpInfo.setFailureCause(FailureCauseHelper.getFailureCause(message) == null ? "" : FailureCauseHelper.getFailureCause(message));
+            }
+            String consumerIP = ConsumerIPHelper.getConsumerIP(message);
+            httpInfo.setConsumerIP(consumerIP);
+        }
+        // 无论请求还是响应都设置serviceKey 2023-06-16 xingzilong
+        String serviceKey = message.getExchange().getEndpoint().getEndpointInfo().getAddress();
+        if (null != serviceKey) {
+            httpInfo.setServiceKey(serviceKey);
+        }
 
         return event;
     }
